@@ -1,0 +1,71 @@
+<app-cache-state [item]="expenseData"></app-cache-state>
+
+
+<div style="max-width: 600px; margin:auto;" fxLayout="column">
+
+  <mat-card class="search" *ngIf="isSearchEnabled">
+    <div fxLayout fxFlexAlign="center">
+
+      <!-- Search text box -->
+      <mat-form-field fxFlex="1 0 auto" class="search">
+        <i matPrefix class="material-icons valign-middle">search&nbsp;</i>
+        <input matInput type="text" placeholder="Ausgaben durchsuchen" [formControl]="searchText">
+        <button mat-button *ngIf="searchText.value" matSuffix mat-icon-button aria-label="Clear"
+          (click)="searchText.setValue('')">
+          <i class="material-icons">close</i>
+        </button>
+      </mat-form-field>
+    
+      <!-- More search options -->
+      <mat-icon fxFlexAlign="end top" class="searchmore" (click)="showMoreSearchOptions=!showMoreSearchOptions">settings</mat-icon>
+
+    </div>
+
+    <div *ngIf="showMoreSearchOptions"> 
+      <mat-slide-toggle class="toggle-future" color="primary" [formControl]="includeFuture">Künftige Einträge anzeigen</mat-slide-toggle>
+    </div>
+
+  </mat-card>
+  
+  <!-- Add -->
+  <button class="add-button-bigscreen" fxFlexAlign="end" fxHide.lt-lg="true" mat-raised-button color="primary" [routerLink]="'./new'">Neuer Eintrag</button>
+
+  <!-- Local queued expenses -->
+  <div *ngIf="this.QueuedItems && this.QueuedItems.length">
+    <div class="text-centered text-italic expense-header">
+      <button class="cursor-hand float-right" style="margin-bottom: -1.2em;" mat-button (click)="sync()">
+        <mat-icon [matBadge]="this.QueuedItems.length" matBadgeColor="accent">sync</mat-icon>
+      </button>
+      <span class="float-clear" style="display:block;">Lokal gespeichert</span>
+    </div>
+    <div *ngFor="let item of this.QueuedItems" class="queued-list">
+      <app-expense-item [expense]="item" (click)="onClickExpense(item)"></app-expense-item>
+    </div>
+  </div>
+
+  <!-- Commited expenses -->
+  <div *ngIf="this.Items">
+    <div *ngFor="let item of Items">
+      <!-- Header-Item -->
+      <div class="text-centered text-italic expense-header" *ngIf="isHeader(item)">{{item}}</div>
+      <!-- Expense-Item -->
+      <app-expense-item *ngIf="!isHeader(item)" [expense]="item" (click)="onClickExpense(item)"></app-expense-item>
+    </div>
+
+    <div fxLayout>
+      <button (click)="fetchMore()" *ngIf="canFetchMore" mat-button fxFlex="1 0 auto">Mehr laden ...</button>
+    </div>
+  </div>
+  
+  <div fxLayout fxLayoutAlign="center" *ngIf="isLoading">
+    <mat-progress-spinner diameter="60" mode="indeterminate" fxLayoutAlign="center"></mat-progress-spinner>
+  </div>
+  
+  <div fxLayout fxLayoutAlign="center" *ngIf="!isLoading && error">
+    <span class="error">{{error}}</span>
+  </div>
+
+  <div class="bottom-spacer"></div>
+
+  <button fxHide.gt-md="true" mat-fab color="primary" [routerLink]="'./new'" class="add-button-smallscreen"><i class="material-icons">add</i></button>
+</div>

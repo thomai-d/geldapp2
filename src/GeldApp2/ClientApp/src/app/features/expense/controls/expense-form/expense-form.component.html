@@ -1,0 +1,126 @@
+<form [formGroup]="expenseForm" (ngSubmit)="onSubmit()" fxLayout="row wrap" fxLayoutAlign="center">
+
+  <mat-card fxFlex="0 1 600px">
+    <mat-card-title>Eintrag</mat-card-title>
+    <div fxLayout="row wrap">
+      <!-- Account -->
+      <mat-form-field fxFlex="1 0 200px">
+        <mat-label>Account</mat-label>
+        <input matNativeControl type="text" readonly value="{{accountName}}">
+      </mat-form-field>
+
+      <!-- Type -->
+      <mat-form-field fxFlex="1 0 200px">
+        <mat-label>Typ</mat-label>
+        <select name="expense-type" matNativeControl formControlName="type" required *ngIf="isInEditMode">
+          <option value="expense">{{typeToDisplayString('expense')}}</option>
+          <option value="revenue">{{typeToDisplayString('revenue')}}</option>
+          <option value="regularExpense">{{typeToDisplayString('regularExpense')}}</option>
+          <option value="regularRevenue">{{typeToDisplayString('regularRevenue')}}</option>
+        </select>
+        <input [value]="expenseTypeDisplay" type="text" matInput *ngIf="!isInEditMode" readonly />
+      </mat-form-field>
+    </div>
+
+    <div fxLayout="row">
+      <!-- Date -->
+      <mat-form-field fxFlex>
+        <input matInput name="expense-date" [matDatepicker]="createdDate" placeholder="Gebucht am"
+          formControlName="date" readonly requried (click)="onDateInputClick()">
+        <mat-datepicker-toggle matSuffix [for]="createdDate" *ngIf="isInEditMode"></mat-datepicker-toggle>
+        <mat-datepicker #createdDate></mat-datepicker>
+      </mat-form-field>
+
+      <!-- Amount -->
+      <mat-form-field fxFlex>
+        <mat-label>Betrag</mat-label>
+        <input name="expense-amount" formControlName="amount" type="number" pattern="[0-9]+(.[0-9]{1,2})?" matInput
+          placeholder="Betrag" required *ngIf="isInEditMode" />
+        <input name="expense-amount" formControlName="amount" [value]="expenseForm.get('amount').value | number:'0.2-2'"
+               type="text" matInput *ngIf="!isInEditMode" readonly />
+        <span matPrefix>&euro;&nbsp;</span>
+      </mat-form-field>
+    </div>
+
+    <div fxLayout="row wrap">
+      <!-- Category -->
+      <mat-form-field fxFlex="1 0 200px">
+        <mat-label>Kategorie</mat-label>
+        <select name="expense-category" matNativeControl formControlName="categoryName" required *ngIf="isInEditMode">
+          <option hidden selected></option>
+          <option *ngFor="let cat of categories" [ngValue]="cat.name">{{cat.name}}</option>
+        </select>
+        <input name="expense-category" formControlName="categoryName" type="text" matInput *ngIf="!isInEditMode" readonly />
+      </mat-form-field>
+
+      <!-- Subcategory -->
+      <mat-form-field fxFlex="1 0 200px">
+        <mat-label>Unterkategorie</mat-label>
+        <select name="expense-subcategory" matNativeControl formControlName="subcategoryName" required *ngIf="isInEditMode">
+          <option hidden selected></option>
+          <option *ngFor="let cat of subcategories" [ngValue]="cat">{{cat}}</option>
+        </select>
+        <input name="expense-subcategory" formControlName="subcategoryName" type="text" matInput *ngIf="!isInEditMode" readonly />
+      </mat-form-field>
+    </div>
+
+    <div fxLayout="row wrap">
+      <!-- Details -->
+      <mat-form-field fxFlex="0 1 100%">
+        <mat-label>Details</mat-label>
+        <input name="expense-details" matNativeControl type="text" formControlName="details" *ngIf="isInEditMode" />
+        <input name="expense-details" matNativeControl type="text" formControlName="details" *ngIf="!isInEditMode" readonly />
+      </mat-form-field>
+    </div>
+
+    <!-- Error -->
+    <div fxLayout="row wrap">
+      <div role="alert" *ngIf="serverError">
+        {{serverError}}
+      </div>
+    </div>
+
+  </mat-card>
+
+  <mat-card *ngIf="expense" fxFlex="0 1 600px" class="mt-1">
+    <mat-card-title>
+      Mehr Infos
+    </mat-card-title>
+    <div fxLayout="row wrap">
+
+      <!-- Created by -->
+      <mat-form-field fxFlex="1 0 100px">
+        <mat-label>Erstellt von</mat-label>
+        <input name="expense-created-by" matNativeControl type="text" readonly [value]="expense.createdBy" />
+      </mat-form-field>
+
+      <!-- Created -->
+      <mat-form-field fxFlex="1 0 100px">
+        <mat-label>Erstellt am</mat-label>
+        <input name="expense-created" matNativeControl type="text" readonly
+          [value]="formatDateTimeString(expense.created)" />
+      </mat-form-field>
+
+    </div>
+
+    <div fxLayout="row wrap">
+
+      <!-- LastModified by -->
+      <mat-form-field fxFlex="1 0 100px">
+        <mat-label>Zuletzt bearbeitet von</mat-label>
+        <input name="expense-modified-by" matNativeControl type="text" readonly [value]="expense.lastModifiedBy" />
+      </mat-form-field>
+
+      <!-- LastModified -->
+      <mat-form-field fxFlex="1 0 100px">
+        <mat-label>Zuletzt bearbeitet am</mat-label>
+        <input name="expense-modified" matNativeControl type="text" readonly
+          [value]="formatDateTimeString(expense.lastModified)" />
+      </mat-form-field>
+
+    </div>
+  </mat-card>
+
+  <input type="submit" class="hidden" />
+
+</form>

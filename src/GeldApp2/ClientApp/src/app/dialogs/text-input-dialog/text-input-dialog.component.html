@@ -1,0 +1,16 @@
+<div class="text-centered" fxLayout="column">
+
+  <form (submit)="onAccept()">
+    <span mat-dialog-title>{{data.message}}</span>
+
+    <mat-form-field>
+      <input name="text" matNativeControl type="text" [(ngModel)]="data.result" />
+    </mat-form-field>
+
+    <mat-dialog-actions fxLayout fxLayoutGap="5px">
+      <button type="submit" mat-raised-button color="primary" (click)="onAccept()">OK</button>
+      <button type="button" mat-raised-button (click)="onCancel()">Abbrechen</button>
+    </mat-dialog-actions>
+  </form>
+
+</div>

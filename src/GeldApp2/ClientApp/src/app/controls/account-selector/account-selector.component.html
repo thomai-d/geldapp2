@@ -1,0 +1,10 @@
+<div [ngClass]="{ 'hidden': !this.isSelectable }">
+  <mat-progress-spinner diameter="30" mode="indeterminate" color="accent" *ngIf="!this.allAccountNames">
+  </mat-progress-spinner>
+  <mat-form-field>
+    <mat-label for="account">Konto</mat-label>
+    <mat-select matNativeControl name="account" [(ngModel)]="selectedAccountName" fxFlexAlign="center">
+      <mat-option *ngFor="let accountName of this.allAccountNames" [value]="accountName">{{accountName}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>

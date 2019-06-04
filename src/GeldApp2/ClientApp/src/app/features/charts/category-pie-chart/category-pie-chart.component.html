@@ -1,0 +1,5 @@
+  <div fxLayout fxLayoutAlign="center" *ngIf="isLoading">
+    <mat-progress-spinner diameter="60" mode="indeterminate" fxLayoutAlign="center"></mat-progress-spinner>
+  </div>
+  
+  <app-chart [data]="chart"></app-chart>

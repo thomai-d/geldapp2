@@ -1,0 +1,49 @@
+stages:
+   - test
+   - build
+   - deploy
+
+variables:
+  IMAGE: $CI_REGISTRY/webapps/geldapp2:$CI_COMMIT_REF_SLUG
+
+test:
+   stage: test
+   tags:
+    - server
+   script:
+   - cd src
+   - dotnet restore
+   - dotnet test -c Release
+
+build_image:
+   before_script:
+      - docker info
+      - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+   after_script:
+      - docker logout $CI_REGISTRY
+      - docker system prune -f --filter "until=4h"
+   tags:
+    - server
+   stage: build
+   script:
+   - bash build.sh
+   - cd src
+   - docker build . -f GeldApp2/Dockerfile -t $IMAGE
+   - docker push $IMAGE
+
+deploy:
+   before_script:
+      - docker info
+      - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+   after_script:
+      - docker logout $CI_REGISTRY
+      - docker system prune -f --filter "until=4h"
+   stage: deploy
+   when: manual
+   only:
+    - master
+   tags:
+    - server
+   script:
+   - cd /srv/geldapp
+   - bash restart_master.sh

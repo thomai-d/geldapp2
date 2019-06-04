@@ -1,0 +1,20 @@
+<div fxLayout fxLayoutAlign="center" *ngIf="isLoading">
+  <mat-progress-spinner diameter="60" mode="indeterminate" fxLayoutAlign="center"></mat-progress-spinner>
+</div>
+<app-cache-state [item]="accountSummary"></app-cache-state>
+<div fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="space-evenly" *ngIf="accountSummary">
+  <mat-card fxFlex.gt-xs="0 1 500px" *ngFor="let account of accountSummary.data">
+    <mat-card-title>{{account.accountName}}<span class="float-right money">{{account.totalExpenses | number:'0.2-2'}}&euro;</span></mat-card-title>
+    <mat-card-content *ngIf="showCharts">
+      <app-category-pie-chart [accountName]="account.accountName"></app-category-pie-chart>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button [routerLink]="['/expenses', account.accountName, 'new']"><i class="material-icons">add</i></button>
+      <button mat-button [routerLink]="['/expenses', account.accountName]"><i class="material-icons">format_list_bulleted</i></button>
+      <button mat-button [routerLink]="['/charts', account.accountName]"><i class="material-icons">show_chart</i></button>
+      <button *ngIf="account.itemsToSync" class="float-right cursor-hand" mat-button (click)="sync(account.accountName)">
+        <mat-icon [matBadge]="account.itemsToSync" matBadgeColor="accent">sync</mat-icon>
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

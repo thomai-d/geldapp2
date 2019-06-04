@@ -1,0 +1,27 @@
+.category {
+  margin: 0px;
+}
+
+.mat-card {
+  padding: 10px 14px;
+}
+
+.amount {
+  margin: 0px;
+  font-size: x-large;
+}
+
+.date {
+  font-style: italic;
+  margin: 0px;
+}
+
+.material-icons.red {
+  color: #e00;
+  margin-right: 0.3em;
+}
+
+.material-icons.green {
+  color: #080;
+  margin-right: 0.3em;
+}

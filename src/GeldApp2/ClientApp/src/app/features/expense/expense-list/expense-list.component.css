@@ -1,0 +1,49 @@
+.add-button-bigscreen {
+  margin-top: 8px;
+}
+
+.add-button-smallscreen {
+  position: fixed;
+  bottom: 2em;
+  right: 2em;
+}
+
+.bottom-spacer {
+  margin-bottom: 6em;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.valign-middle {
+  vertical-align: middle;
+}
+
+.expense-header {
+  margin-top: 5px;
+  margin-bottom: 3px;
+}
+
+mat-form-field.search {
+  margin-bottom: -20px;
+  margin-top: -15px;
+}
+
+mat-card.search {
+  margin-bottom: 1em;
+}
+
+mat-icon.searchmore {
+  margin-left: 10px;
+  margin-top: 0.3em;
+  cursor: pointer; 
+}
+
+.toggle-future {
+  margin-top: 10px;
+}
+
+div.queued-list {
+  margin-bottom: 1em;
+}

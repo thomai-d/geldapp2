@@ -1,0 +1,24 @@
+<mat-toolbar color="primary" *ngIf="auth.canActivate(null, null)" fxLayoutAlign="center center"
+  fxLayoutAlign.gt-sm="center center">
+  <button mat-icon-button (click)="toggleMenu.emit()" fxHide.gt-sm><i class="material-icons">menu</i></button>
+  <button mat-icon-button (click)="location.back()" fxHide.lt-md><i class="material-icons">arrow_back</i></button>
+
+  <h3 fxFlex="1 0" class="title" ngClass.gt-sm="text-centered">{{title}}</h3>
+
+  <div fxLayout fxLayoutAlign="end center" fxHide.gt-sm="true">
+    <div *ngFor="let button of buttons">
+      <button (click)="click(button)" [disabled]="button.isExecuting || !button.isEnabled()" mat-icon-button *ngIf="button.isVisible()">
+        <mat-icon>{{button.icon}}</mat-icon>
+      </button>
+    </div>
+  </div>
+</mat-toolbar>
+  
+<div class="sidebar" fxHide.lt-md="true">
+  <div *ngFor="let button of buttons">
+    <button (click)="click(button)" [disabled]="button.isExecuting || !button.isEnabled()" mat-icon-button
+      *ngIf="button.isVisible()">
+      <mat-icon>{{button.icon}}</mat-icon>
+    </button>
+  </div>
+</div>

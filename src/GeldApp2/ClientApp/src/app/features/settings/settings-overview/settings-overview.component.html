@@ -1,0 +1,26 @@
+<div id="root" fxLayoutAlign="center">
+
+  <div fxFlex="0 1 500px">
+
+    <mat-nav-list>
+      
+      <mat-list-item (click)="gotoCategories()" class="cursor-hand">
+        <mat-icon>local_offer</mat-icon>
+        <span>Kategorien</span>
+      </mat-list-item>
+      
+      <mat-list-item routerLink="password" class="cursor-hand">
+        <mat-icon>security</mat-icon>
+        <span>Passwort ändern</span>
+      </mat-list-item>
+
+      <mat-list-item routerLink="info" class="cursor-hand">
+        <mat-icon>info</mat-icon>
+        <span>Infos</span>
+      </mat-list-item>
+
+    </mat-nav-list>
+
+  </div>
+
+</div>

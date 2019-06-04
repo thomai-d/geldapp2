@@ -1,0 +1,37 @@
+<body>
+  <mat-sidenav-container>
+    <mat-sidenav *ngIf="auth.canActivate(null, null)" #sidenav role="navigation" [disableClose]="!isSmallScreen" [opened]="!isSmallScreen" [mode]="isSmallScreen ? 'over' : 'side'">
+      <!-- Avatar -->
+      <div fxLayout="column" fxLayoutAlign="center center" class="avatar">
+        <img mat-card-avatar class="avatar" src="../assets/icons/icon-96x96.png">
+        <span class="username">{{userName}}</span>
+      </div>
+        
+      <!-- Accounts -->
+      <div class="ml-2 mt-2">
+        <app-account-selector (accountChanged)="onAccountChanged()"></app-account-selector>
+      </div>
+
+      <!-- Side menu -->
+      <mat-nav-list>
+        <a mat-list-item (click)="onMenuItemClick()" [routerLink]="['/']">Übersicht</a>
+        <a mat-list-item (click)="onMenuItemClick()" (click)="gotoExpenses();" href="javascript:void(0)">Ausgaben</a>
+        <a mat-list-item (click)="onMenuItemClick()" (click)="gotoCharts();" href="javascript:void(0)">Charts</a>
+        <a mat-list-item (click)="onMenuItemClick()" [routerLink]='["/settings"]' href="javascript:void(0)">Einstellungen</a>
+        <a mat-list-item (click)="onMenuItemClick();logout();" href="javascript:void(0)">Logout</a>
+      </mat-nav-list>
+    </mat-sidenav>
+
+    <mat-sidenav-content>
+
+      <!-- Toolbar -->
+      <app-toolbar *ngIf="auth.canActivate(null, null)" (toggleMenu)="toggleSideNav()"></app-toolbar>
+
+      <!-- Content -->
+      <main id="main-content">
+        <router-outlet></router-outlet>
+      </main>
+    </mat-sidenav-content>
+
+  </mat-sidenav-container>
+</body>

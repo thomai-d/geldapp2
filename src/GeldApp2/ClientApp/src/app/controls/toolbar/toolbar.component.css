@@ -1,0 +1,39 @@
+h3.title {
+  margin-top: 3px;
+}
+
+.mat-toolbar {
+  padding: 0px 8px;
+}
+
+mat-toolbar {
+  border-radius: 3px;
+  position: sticky;
+  top: 0px;
+  z-index: 5;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-end;
+  position: absolute;
+  top: 80px;
+  right: 0px;
+  bottom: 0px;
+  margin: 8px;
+}
+
+.sidebar button {
+  margin: 8px;
+}
+
+.sidebar mat-icon {
+  transform: scale(2);
+  transition: all .2s ease-in-out;
+}
+
+.sidebar mat-icon:hover {
+  transform: scale(2.5);
+}

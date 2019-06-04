@@ -1,0 +1,37 @@
+version: '3.4'
+
+services:
+  mysql:
+    image: mysql
+    container_name: mysql
+    hostname: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    volumes:
+      - "./backup:/backup"
+    ports:
+     - "127.0.0.1:3306:3306"
+    environment:
+    - "MYSQL_ROOT_PASSWORD=123"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "5"
+
+  pma:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    container_name: pma
+    hostname: pma
+    ports:
+     - "127.0.0.1:8860:80"
+    environment:
+     - "PMA_HOST=mysql"
+     - "PMA_USER=root"
+     - "PMA_PASSWORD=123"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5m"
+        max-file: "5"

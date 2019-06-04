@@ -1,0 +1,111 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import '@angular/material/prebuilt-themes/pink-bluegrey.css';
+
+
+/* General */
+
+body {
+  background-color: gainsboro;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0px;
+  overflow: hidden;
+}
+
+.sticky-bottom {
+  position: sticky;
+  bottom: 0.25rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
+/* Cursor */
+
+.cursor-hand {
+  cursor: pointer;
+}
+
+.cursor-default {
+  cursor: default;
+}
+
+/* Alignment */
+
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
+.float-clear {
+  clear: both;
+}
+
+.margin-auto {
+  margin: auto;
+}
+
+/* margin */
+
+.mb-1 {
+  margin-bottom: 0.5em !important;
+}
+
+.ml-1 {
+  margin-left: 0.5em;
+}
+
+.ml-2 {
+  margin-left: 1.0em;
+}
+
+.mr-1 {
+  margin-right: 0.5em;
+}
+
+.mt-1 {
+  margin-top: 0.5em;
+}
+
+.mt-2 {
+  margin-top: 1em;
+}
+
+.ml-2 {
+  margin-left: 1em;
+}
+
+.ph-0 {
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+}
+
+.ph-1 {
+  padding-top: 3px !important;
+  padding-bottom: 3px !important;
+}
+
+/* flexbox */
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}

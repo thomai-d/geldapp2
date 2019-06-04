@@ -1,0 +1,27 @@
+<mat-card class="cursor-hand mb-1" (click)="onClick()">
+  <mat-card-content fxLayout="rows" fxLayoutAlign="start center" [ngSwitch]="expense.type">
+
+    <div class="stacked" *ngSwitchCase="'regularRevenue'">
+      <i class="material-icons green big">redeem</i>
+      <i class="material-icons small">autorenew</i>
+    </div>
+
+    <i class="material-icons green" *ngSwitchCase="'revenue'">redeem</i>
+
+    <i class="material-icons red" *ngSwitchCase="'expense'">attach_money</i>
+
+    <div class="stacked" *ngSwitchCase="'regularExpense'">
+      <i class="material-icons red big">attach_money</i>
+      <i class="material-icons small">autorenew</i>
+    </div>
+
+    <div fxFlex="1 1 auto">
+      <p class="date">{{ formatDate(expense.date) }}</p>
+      <p class="category">
+        {{ expense.categoryName }} - {{ expense.subcategoryName }}
+      </p>
+    </div>
+
+    <p fxFlex="0 0 auto" class="amount">{{ expense.amount | number:'1.2-2' }} &euro;</p>
+  </mat-card-content>
+</mat-card>

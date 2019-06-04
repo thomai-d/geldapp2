@@ -1,0 +1,28 @@
+:host ::ng-deep .mat-form-field-infix {
+  width: 80px !important;
+}
+
+.mat-form-field {
+  margin: 0px 5px;
+}
+
+:host ::ng-deep .mat-form-field-wrapper {
+  padding-bottom: 16px;
+}
+
+.material-icons.heart {
+  font-size: 14px;
+}
+
+button.left {
+  margin-right: 10px;
+}
+
+button.right {
+  float: right;
+  margin-left: 10px;
+}
+
+mat-card {
+  margin: 2px;
+}

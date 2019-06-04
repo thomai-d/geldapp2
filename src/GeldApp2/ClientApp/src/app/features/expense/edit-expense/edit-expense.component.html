@@ -1,0 +1,5 @@
+<app-cache-state [item]="expense"></app-cache-state>
+<div *ngIf="expense">
+  <app-expense-form *ngIf="expense.data" [expense]="expense.data" 
+                    (confirmed)="onExpenseConfirmed($event)" (delete)="onDeleteExpense($event)"></app-expense-form>
+</div>

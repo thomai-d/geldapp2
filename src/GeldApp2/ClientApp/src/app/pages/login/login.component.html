@@ -1,0 +1,20 @@
+<div fxLayoutAlign="center center" style="height: 70%">
+  <mat-card style="width:100%; max-width:500px;">
+    <mat-card-title>Login</mat-card-title>
+    <mat-card-content>
+      <form>
+        <div fxLayout="column" fxLayoutAlign="stretch">
+          <mat-form-field>
+            <input matInput type="text" placeholder="Benutzer" name="username" #user autocomplete="username" />
+          </mat-form-field><br>
+          <mat-form-field>
+            <input matInput type="password" placeholder="Password" name="password" #pass autocomplete="current-password" />
+          </mat-form-field><br>
+
+          <button mat-raised-button color="primary" (click)="onLogin(user.value, pass.value)" *ngIf="!isLoggingIn">Login</button>
+          <mat-progress-spinner fxFlexAlign="center" diameter="30" mode="indeterminate" color="accent" *ngIf="isLoggingIn"></mat-progress-spinner>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

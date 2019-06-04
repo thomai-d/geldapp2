@@ -1,0 +1,5 @@
+<app-expense-form (confirmed)="onExpenseConfirmed($event)"></app-expense-form>
+
+<div *ngIf="serverError" class="alert alert-danger">
+  {{serverError}}
+</div>

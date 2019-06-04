@@ -1,0 +1,12 @@
+﻿<ProjectConfiguration>
+  <Settings>
+    <FilesExcludedFromAutoBuild>
+      <Value>*.js</Value>
+      <Value>*.ts</Value>
+    </FilesExcludedFromAutoBuild>
+    <IgnoredTests>
+      <AllTestsSelector />
+    </IgnoredTests>
+    <UseBuildConfiguration>DEBUG</UseBuildConfiguration>
+  </Settings>
+</ProjectConfiguration>

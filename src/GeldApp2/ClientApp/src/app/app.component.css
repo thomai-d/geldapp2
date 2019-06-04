@@ -1,0 +1,47 @@
+mat-sidenav-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.account-selector {
+  margin-left: 10px;
+}
+
+mat-sidenav {
+  width: 220px;
+}
+
+main {
+  padding: 5px;
+}
+
+.navi-items {
+  list-style-type: none;
+}
+
+a {
+  text-decoration: none;
+  color: white;
+}
+
+a:hover, a:active {
+  color: lightgray;
+}
+
+div.avatar {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+img.avatar {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 5px;
+}
+
+span.username {
+  font-size: 150%;
+}

@@ -1,0 +1,8 @@
+<app-cache-state [item]="categories"></app-cache-state>
+<app-list-edit *ngIf="subcategories" [items]="subcategories" placeholder="Neue Unterkategorie"
+                (createRequested)="onCreate($event)" (deleteRequested)="onDelete($event)">
+  <ng-template let-name>
+      <span>{{name}}</span>
+  </ng-template>
+</app-list-edit>
+

@@ -1,0 +1,40 @@
+<div fxLayout="row">
+  <mat-card fxFlex="0 1 auto">
+    <mat-card-content>
+      <table class="mat-table">
+        <tbody class="rowgroup">
+          <tr class="mat-row">
+            <td class="mat-cell">Version</td>
+            <td class="mat-cell">{{version}}</td>
+          </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">Release Datum</td>
+            <td class="mat-cell">{{releaseDate}}</td>
+          </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">Media</td>
+            <td class="mat-cell">{{media}}</td>
+          </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">Media-Query</td>
+            <td class="mat-cell">{{mediaQuery}}</td>
+          </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">window.inner*</td>
+            <td class="mat-cell">{{eval('window.innerWidth')}}x{{eval('window.innerHeight')}}</td>
+          </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">window.devicePixelRatio</td>
+            <td class="mat-cell">{{eval('window.devicePixelRatio')}}</td>
+          </tr>
+          
+          <!-- Token stuff -->
+          <tr class="mat-row">
+            <td class="mat-cell">Token-Gültigkeit</td>
+            <td class="mat-cell">{{userService.tokenExpiry$ | async | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </mat-card-content>
+  </mat-card>
+</div>

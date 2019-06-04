@@ -1,0 +1,3 @@
+<mat-card *ngIf="show">
+  <p [ngClass]="{ 'warn': !isError, 'error': isError }">{{text}}</p>
+</mat-card>

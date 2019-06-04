@@ -1,0 +1,12 @@
+.mat-card-content {
+    margin-bottom: 0px;
+}
+
+.mat-card {
+    margin: 4px;
+}
+
+span.money {
+    font-style: italic;
+    font-weight: lighter;
+}

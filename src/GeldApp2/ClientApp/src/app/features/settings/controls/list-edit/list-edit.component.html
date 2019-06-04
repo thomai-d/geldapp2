@@ -1,0 +1,32 @@
+<div id="root" *ngIf="items" fxLayoutAlign="center">
+
+  <div fxFlex="0 1 500px" fxLayout="column">
+
+    <!-- Links -->
+    <mat-nav-list *ngIf="!isInDeleteMode && routerLinkFunc">
+      <mat-list-item [routerLink]="routerLinkFunc(item)" *ngFor="let item of items" class="cursor-hand">
+        <mat-icon class="list-icon">folder</mat-icon>
+        <ng-container *ngTemplateOutlet="template; context: {$implicit: item}"></ng-container>
+      </mat-list-item>
+    </mat-nav-list>
+
+    <!-- No Links -->
+    <mat-list *ngIf="!isInDeleteMode && !routerLinkFunc">
+      <mat-list-item *ngFor="let item of items">
+        <mat-icon class="list-icon">folder</mat-icon>
+        <ng-container *ngTemplateOutlet="template; context: {$implicit: item}"></ng-container>
+      </mat-list-item>
+    </mat-list>
+
+    <!-- Edit mode -->
+    <mat-selection-list #itemList *ngIf="isInDeleteMode">
+      <mat-list-option *ngFor="let item of items" [value]="item">
+        <div fxLayout fxLayoutAlign="start center">
+          <mat-icon class="list-icon">folder</mat-icon>
+          <ng-container *ngTemplateOutlet="template; context: {$implicit: item}"></ng-container>
+        </div>
+      </mat-list-option>
+    </mat-selection-list>
+
+  </div>
+</div>

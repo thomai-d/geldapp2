@@ -1,0 +1,9 @@
+<app-cache-state [item]="categories"></app-cache-state>
+
+<app-list-edit *ngIf="categories && categories.data" [items]="categories.data"
+  (createRequested)="onCreate($event)" (deleteRequested)="onDelete($event)"
+  [routerLinkFunc]="linkFromCategory" placeholder="Neue Hauptkategorie">
+  <ng-template let-category>
+    <span>{{category.name}}</span>
+  </ng-template>
+</app-list-edit>

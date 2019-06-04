@@ -1,0 +1,13 @@
+<div class="text-centered">
+
+  <p>
+    <mat-icon>error</mat-icon>
+  </p>
+  <p>
+    {{data.message}}
+  </p>
+
+  <button mat-raised-button [color]="data.button1color" (click)="onButton1()">{{data.button1Text}}</button>
+  <button mat-raised-button [color]="data.button2color" (click)="onButton2()">{{data.button2Text}}</button>
+
+</div>

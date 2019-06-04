@@ -1,0 +1,24 @@
+<div>
+  <button mat-icon-button (click)="toggleMode()">
+    <mat-icon *ngIf="!selectSubcategory">hdr_weak</mat-icon>
+    <mat-icon *ngIf="selectSubcategory">hdr_strong</mat-icon>
+  </button>
+
+  <mat-form-field *ngIf="!selectSubcategory">
+    <mat-label>Kategorie {{label}}</mat-label>
+    <select matNativeControl [(ngModel)]="selection">
+      <option [ngValue]="[]">-</option>
+      <option *ngFor="let cat of categories" [ngValue]="[cat.name]">{{cat.name}}</option>
+    </select>
+  </mat-form-field>
+
+  <mat-form-field *ngIf="selectSubcategory">
+    <mat-label>Unterkategorie {{label}}</mat-label>
+    <select matNativeControl [(ngModel)]="selection">
+      <option [ngValue]="[]">-</option>
+      <optGroup *ngFor="let cat of categories" [label]="cat.name">
+        <option *ngFor="let subcat of cat.subcategories" [ngValue]="[cat.name, subcat]">{{subcat}}</option>
+      </optGroup>
+    </select>
+  </mat-form-field>
+</div>
