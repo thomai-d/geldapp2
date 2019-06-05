@@ -39,7 +39,6 @@ deploy:
       - docker logout $CI_REGISTRY
       - docker system prune -f --filter "until=4h"
    stage: deploy
-   when: manual
    only:
     - master
    tags:
