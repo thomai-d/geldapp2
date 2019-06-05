@@ -5,6 +5,7 @@ using GeldApp2.Database.ViewModels;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,6 +31,8 @@ namespace GeldApp2.Application.Queries
     public class GetExpensesQueryHandler
         : IRequestHandler<GetExpensesQuery, ExpenseViewModel[]>
     {
+        public readonly CultureInfo SearchCulture = new CultureInfo("de");
+
         private readonly GeldAppContext db;
 
         public GetExpensesQueryHandler(GeldAppContext db)
@@ -72,10 +75,17 @@ namespace GeldApp2.Application.Queries
                 }
                 else
                 {
+                    var amountSearchText = request.SearchText;
+                    if (double.TryParse(amountSearchText, NumberStyles.AllowDecimalPoint, SearchCulture, out var amount))
+                    {
+                        // Translate the amount's search culture into local culture (used for differing decimal points).
+                        amountSearchText = amount.ToString("0.00");
+                    }
+
                     query = query.Where(ex => ex.Category.Contains(request.SearchText)
                                             || ex.Subcategory.Contains(request.SearchText)
                                             || ex.Details.Contains(request.SearchText)
-                                            || ex.Amount.ToString().Contains(request.SearchText));
+                                            || ex.Amount.ToString().Contains(amountSearchText));
                 }
             }
 
