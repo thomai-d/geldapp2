@@ -48,6 +48,8 @@ namespace GeldApp2
             // Configure stuff.
             services.Configure<IpBlockerSettings>(Configuration.GetSection("IpBlockerSettings"));
 
+            services.AddHostedService<PerformanceMonitorService>();
+
             services.AddScoped<ISqlQuery, SqlQuery>();
             services.AddScoped<IJwtTokenService, JwtTokenService>();
             services.AddScoped<IDatabaseMigrator, DatabaseMigrator>();
