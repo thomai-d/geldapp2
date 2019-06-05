@@ -3,27 +3,22 @@
 
 <div style="max-width: 600px; margin:auto;" fxLayout="column">
 
-  <mat-card class="search" *ngIf="isSearchEnabled">
+  <mat-card class="search" [ngClass]="{ 'collapsed': !isSearchEnabled }">
     <div fxLayout fxFlexAlign="center">
 
       <!-- Search text box -->
       <mat-form-field fxFlex="1 0 auto" class="search">
         <i matPrefix class="material-icons valign-middle">search&nbsp;</i>
-        <input matInput type="text" placeholder="Ausgaben durchsuchen" [formControl]="searchText">
-        <button mat-button *ngIf="searchText.value" matSuffix mat-icon-button aria-label="Clear"
-          (click)="searchText.setValue('')">
+        <input #search matInput type="text" placeholder="Ausgaben durchsuchen" [formControl]="searchText">
+        <button *ngIf="searchText.value" matSuffix mat-icon-button aria-label="Clear"
+                (click)="searchText.setValue('')">
           <i class="material-icons">close</i>
         </button>
       </mat-form-field>
-    
-      <!-- More search options -->
-      <mat-icon fxFlexAlign="end top" class="searchmore" (click)="showMoreSearchOptions=!showMoreSearchOptions">settings</mat-icon>
 
     </div>
 
-    <div *ngIf="showMoreSearchOptions"> 
-      <mat-slide-toggle class="toggle-future" color="primary" [formControl]="includeFuture">Künftige Einträge anzeigen</mat-slide-toggle>
-    </div>
+    <mat-slide-toggle class="toggle-future" color="primary" [formControl]="includeFuture">Künftige Einträge anzeigen</mat-slide-toggle>
 
   </mat-card>
   

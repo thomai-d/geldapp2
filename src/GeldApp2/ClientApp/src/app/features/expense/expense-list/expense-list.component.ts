@@ -2,7 +2,7 @@ import { ExpenseService } from './../../../services/expense.service';
 import { CacheableItem } from 'src/app/services/cache.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { GeldAppApi } from '../../../api/geldapp-api';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Expense } from 'src/app/api/model/expense';
 import { Subscription, combineLatest, BehaviorSubject, concat, of } from 'rxjs';
 import { switchMap, debounceTime } from 'rxjs/operators';
@@ -39,10 +39,14 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
     private log: Logger,
     private router: Router
   ) {
-    this.toolbarSearch = new ToolbarItem('search', async () => { this.isSearchEnabled = true; }, () => !this.isSearchEnabled);
+    this.toolbarSearch = new ToolbarItem('search', async () => {
+      this.isSearchEnabled = true;
+      setTimeout(() => this.search.nativeElement.focus(), 30);
+    }, () => !this.isSearchEnabled);
   }
 
   public QueuedItems: Expense[];
+
   public Items: (Expense | string)[];
 
   public isLoading: boolean;
@@ -50,13 +54,14 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
   public isSearchEnabled = false;
   public searchText = new FormControl();
   public includeFuture = new FormControl();
-  public showMoreSearchOptions = false;
 
   public error: string;
 
   public canFetchMore = false;
 
   public expenseData: CacheableItem<Expense[]>;
+
+  @ViewChild('search') search: ElementRef;
 
   async ngOnInit() {
 

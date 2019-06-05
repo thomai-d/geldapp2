@@ -30,6 +30,10 @@ body {
   visibility: hidden;
 }
 
+.collapsed {
+  display: none !important;
+}
+
 /* Cursor */
 
 .cursor-hand {
