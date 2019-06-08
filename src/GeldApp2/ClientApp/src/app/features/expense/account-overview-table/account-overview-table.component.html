@@ -1,6 +1,3 @@
-<div fxLayout fxLayoutAlign="center" *ngIf="isLoading">
-  <mat-progress-spinner diameter="60" mode="indeterminate" fxLayoutAlign="center"></mat-progress-spinner>
-</div>
 <app-cache-state [item]="accountSummary"></app-cache-state>
 <div fxLayout="row wrap" fxLayout.xs="column" fxLayoutAlign="space-evenly" *ngIf="accountSummary">
   <mat-card fxFlex.gt-xs="0 1 500px" *ngFor="let account of accountSummary.data">

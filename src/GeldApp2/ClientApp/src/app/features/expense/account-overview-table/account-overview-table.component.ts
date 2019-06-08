@@ -17,31 +17,28 @@ export class AccountOverviewTableComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
   constructor(
-    private accountService: ChartSummaryService,
+    private chartService: ChartSummaryService,
     private expenseService: ExpenseService,
     private dialogService: DialogService
   ) { }
-
-  isLoading = true;
 
   showCharts = false;
 
   accountSummary: CacheableItem<AccountSummary[]>;
 
-  async ngOnInit() {
-    try {
-    this.accountSummary = await this.accountService.getSummaryMonth();
-    } finally {
-      this.isLoading = false;
-    }
+  ngOnInit() {
+    const sub = this.chartService.getSummaryMonth()
+      .subscribe(data => {
+        this.accountSummary = data;
+        this.updateSyncableItems();
+        if (this.accountSummary.state === ItemState.Online) {
+          this.showCharts = document.body.offsetWidth > 600;
+          const showCharts$ = fromEvent(window, 'resize').pipe(debounceTime(500)).pipe(map(_ => document.body.offsetWidth > 600));
+          this.subscriptions.push(showCharts$.subscribe(v => this.showCharts = v));
+        }
+      });
 
-    this.updateSyncableItems();
-
-    if (this.accountSummary.state === ItemState.Online) {
-      this.showCharts = document.body.offsetWidth > 600;
-      const showCharts$ = fromEvent(window, 'resize').pipe(debounceTime(500)).pipe(map(_ => document.body.offsetWidth > 600));
-      this.subscriptions.push(showCharts$.subscribe(v => this.showCharts = v));
-    }
+   this.subscriptions.push(sub);
   }
 
   ngOnDestroy() {

@@ -170,10 +170,12 @@ export class ExpenseService {
         } else {
           subj.next(CacheableItem.offline());
         }
+        return;
       }
 
       if (ex.status === 400 && ex.error && ex.error.errorType === 'FilterParseException') {
         subj.next(CacheableItem.error('Ungültiger Filterausdruck'));
+        return;
       }
 
       this.log.error('services.expense', `Error while fetching expenses: ${JSON.stringify(ex)}`);

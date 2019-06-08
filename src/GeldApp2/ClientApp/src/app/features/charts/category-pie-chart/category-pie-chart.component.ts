@@ -28,7 +28,12 @@ export class CategoryPieChartComponent implements AfterViewInit, OnDestroy {
   chart: any;
 
   async ngAfterViewInit() {
+    try {
     this.chartData = await this.api.getMonthByCategoryChart(this.accountName);
+    } finally {
+      this.isLoading = false;
+    }
+
     await this.refreshChart();
 
     const showCharts$ = fromEvent(window, 'resize').pipe(debounceTime(500));
