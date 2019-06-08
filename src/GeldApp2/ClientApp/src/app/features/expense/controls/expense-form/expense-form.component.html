@@ -121,6 +121,6 @@
     </div>
   </mat-card>
 
-  <input type="submit" class="hidden" />
+  <input type="submit" class="hidden" [disabled]="!this.expenseForm.valid" />
 
 </form>
