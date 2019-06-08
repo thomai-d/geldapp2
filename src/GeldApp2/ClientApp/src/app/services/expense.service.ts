@@ -6,11 +6,14 @@ import { GeldAppApi } from '../api/geldapp-api';
 import { isOfflineException } from '../helpers/exception-helper';
 import { DialogService } from './dialog.service';
 import { Progress } from '../dialogs/progress-dialog/progress-dialog.component';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, Observer } from 'rxjs';
 import { UserService } from './user.service';
 
 @Injectable({ providedIn: 'root' })
 export class ExpenseService {
+
+  // Timespan in [ms] within which the cached expense list is reported as 'online'.
+  static readonly AssumeOnlineTimeMs = 60000;
 
   // Local expenses contain expenses which were modified in offline mode.
   // Expense.Ids < 0 indicate expenses which are new, others are modified versions of existing ex
@@ -104,14 +107,50 @@ export class ExpenseService {
     return [];
   }
 
+  private getCachedExpenses(accountName: string) {
+    const cacheKey = this.latestExpensesCacheKey(accountName);
+    const cachedItem = this.cache.get<Expense[]>(cacheKey);
+    if (cachedItem) {
+      cachedItem.data = this.replaceWithLocal(accountName, cachedItem.data);
+    }
+    return cachedItem;
+  }
+
   // Fetches the expenses from the server, replacing local expenses.
   // Queued expenses are not returned.
-  public async getExpenses(accountName: string, searchText: string, limit: number, includeFuture: boolean)
-                  : Promise<CacheableItem<Expense[]>> {
+  public getExpenses(accountName: string, searchText: string, limit: number, includeFuture: boolean)
+                  : Observable<CacheableItem<Expense[]>> {
 
-    const cacheKey = this.latestExpensesCacheKey(accountName);
+    return new Observable<CacheableItem<Expense[]>>(subj => {
+
+    if (!searchText) {
+      const cachedItem = this.getCachedExpenses(accountName);
+      if (cachedItem) {
+        if (cachedItem.isNewerThan(ExpenseService.AssumeOnlineTimeMs)) {
+          cachedItem.state = ItemState.Online;
+        } else {
+          cachedItem.isBackgroundLoading = true;
+        }
+
+        subj.next(cachedItem);
+      }
+    } else {
+      subj.next(CacheableItem.live([], true));
+    }
+
+      this.fetchExpensesFromServer(subj, accountName, searchText, limit, includeFuture);
+    });
+  }
+
+  private async fetchExpensesFromServer(
+    subj: Observer<CacheableItem<Expense[]>>,
+    accountName: string,
+    searchText: string,
+    limit: number,
+    includeFuture: boolean) {
 
     try {
+      const cacheKey = this.latestExpensesCacheKey(accountName);
       const expenses = await this.api.getExpenses(accountName, searchText, limit, 0, includeFuture);
 
       if (!searchText) {
@@ -119,25 +158,26 @@ export class ExpenseService {
       }
 
       const finalExpenses = this.replaceWithLocal(accountName, expenses);
-      return CacheableItem.live<Expense[]>(finalExpenses);
+      subj.next(CacheableItem.live<Expense[]>(finalExpenses));
+      subj.complete();
     } catch (ex) {
 
-      if (!searchText) {
-        const cachedItem = this.cache.get<Expense[]>(cacheKey);
+
+      if (isOfflineException(ex)) {
+        const cachedItem = this.getCachedExpenses(accountName);
         if (cachedItem) {
-          cachedItem.data = this.replaceWithLocal(accountName, cachedItem.data);
-          return cachedItem;
+          subj.next(cachedItem);
+        } else {
+          subj.next(CacheableItem.offline());
         }
       }
 
-      if (isOfflineException(ex)) {
-        return CacheableItem.offline();
-      }
       if (ex.status === 400 && ex.error && ex.error.errorType === 'FilterParseException') {
-        return CacheableItem.error('Ungültiger Filterausdruck');
+        subj.next(CacheableItem.error('Ungültiger Filterausdruck'));
       }
+
       this.log.error('services.expense', `Error while fetching expenses: ${JSON.stringify(ex)}`);
-      return CacheableItem.error('Unbekannter Fehler');
+      subj.error(CacheableItem.error('Unbekannter Fehler'));
     }
   }
 
@@ -209,7 +249,7 @@ export class ExpenseService {
 
       if (errors) {
         progress.error(`${errors} ${errors === 1 ? 'Eintag konnte' : 'Einträge konnten'} nicht synchronisiert werden.
-                                                                      \nBesteht eine Internetverbindung?`);
+                       \nBesteht eine Internetverbindung?`);
       } else {
         progress.complete();
       }

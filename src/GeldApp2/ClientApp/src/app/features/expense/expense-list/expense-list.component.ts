@@ -1,22 +1,22 @@
 import { ExpenseService } from './../../../services/expense.service';
 import { CacheableItem } from 'src/app/services/cache.service';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 import { GeldAppApi } from '../../../api/geldapp-api';
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { Expense } from 'src/app/api/model/expense';
 import { Subscription, combineLatest, BehaviorSubject, concat, of } from 'rxjs';
-import { switchMap, debounceTime } from 'rxjs/operators';
+import { switchMap, debounceTime, tap, map } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
-import { Logger } from 'src/app/services/logger';
 import { environment } from 'src/environments/environment';
 import { DialogService } from 'src/app/services/dialog.service';
 import { isOfflineException } from 'src/app/helpers/exception-helper';
 import { ToolbarService, ToolbarItem } from 'src/app/services/toolbar.service';
+import { ExpenseQueryOptions } from './expense-list-query-options';
 
 @Component({
   selector: 'app-expense-list',
   templateUrl: './expense-list.component.html',
-  styleUrls: ['./expense-list.component.css']
+  styleUrls: ['./expense-list.component.css'],
 })
 export class ExpenseListComponent implements OnInit, OnDestroy {
 
@@ -36,7 +36,6 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
     private expenseService: ExpenseService,
     private toolbar: ToolbarService,
     private api: GeldAppApi,
-    private log: Logger,
     private router: Router
   ) {
     this.toolbarSearch = new ToolbarItem('search', async () => {
@@ -52,8 +51,8 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
   public isLoading: boolean;
 
   public isSearchEnabled = false;
-  public searchText = new FormControl();
-  public includeFuture = new FormControl();
+  public searchText = new FormControl('');
+  public includeFuture = new FormControl(false);
 
   public error: string;
 
@@ -65,12 +64,14 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
 
   async ngOnInit() {
 
-    // Search parameters modifies the URL.
+    // Search parameters modify the URL.
     const s1 = combineLatest([this.searchText.valueChanges,
                       concat(of(false), this.includeFuture.valueChanges)])
           .pipe(debounceTime(500))
           .subscribe(([a, b]) => {
-            const params = { q: this.searchText.value, future: this.includeFuture.value };
+            const params = <any>{};
+            if (!!this.searchText.value) { params.q = this.searchText.value; }
+            if (!!this.includeFuture.value) { params.future = true; }
             this.router.navigate(['.'], { relativeTo: this.activatedRoute, queryParams: params});
           });
 
@@ -79,31 +80,16 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
     // Url modifications trigger a refresh.
     const stream = combineLatest([this.activatedRoute.paramMap, this.activatedRoute.queryParamMap, this.forceRefreshSub])
       .pipe(
-        switchMap(async ([params, query]) => {
-          const q = query.get('q');
-          const fut = query.get('future') === 'true';
-          this.accountName = params.get('accountName');
-          this.searchText.setValue(q);
-          this.isLoading = true;
-          this.Items = [];
-          this.QueuedItems = [];
-          this.canFetchMore = false;
+        map(([params, queryParams]) => this.buildQueryObject(params, queryParams)),
+        tap(opt => this.updateSearchForm(opt)),
+        switchMap(opt => this.expenseService.getExpenses(opt.accountName, opt.searchText,
+                                                         environment.expenseItemsPerPage, opt.includeFuture)));
 
-          // Update UI.
-          if (!this.isSearchEnabled && (!!q || fut)) { this.isSearchEnabled = true; }
-          if ((!this.includeFuture.value && fut)
-           || (this.includeFuture.value && !fut)) {
-             this.includeFuture.setValue(fut);
-          }
-
-          // Fetch stuff.
-          const result = await this.fetchExpenses(q, fut);
-          this.canFetchMore = result.data && result.data.length !== environment.expenseItemsPerPage;
-          this.toolbar.setButtons([this.toolbarSearch]);
-          return result;
-        }));
-
-    this.subscriptions.push(stream.subscribe(d => { this.processResult(d); }));
+    this.subscriptions.push(stream.subscribe(result => {
+      this.canFetchMore = result.data && result.data.length !== environment.expenseItemsPerPage;
+      this.toolbar.setButtons([this.toolbarSearch]);
+      this.processResult(result);
+    }));
   }
 
   ngOnDestroy(): void {
@@ -153,15 +139,38 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
     return isString;
   }
 
-  private async fetchExpenses(searchText: string, includeFuture): Promise<CacheableItem<Expense[]>> {
-    this.log.debug('page.expense-list', `getting expenses for ${this.accountName}, q=${searchText}`);
-    return await this.expenseService.getExpenses(this.accountName, searchText, environment.expenseItemsPerPage, includeFuture);
+  /* Rx operators */
+
+  private buildQueryObject(params: ParamMap, queryParams: ParamMap): ExpenseQueryOptions {
+    return {
+      accountName: params.get('accountName'),
+      searchText: queryParams.get('q'),
+      includeFuture: queryParams.get('future') === 'true',
+    };
   }
+
+  private updateSearchForm(opt: ExpenseQueryOptions) {
+    if (!!opt.searchText || opt.includeFuture) {
+      this.isSearchEnabled = true;
+    }
+
+    this.searchText.setValue(opt.searchText);
+    this.includeFuture.setValue(opt.includeFuture);
+    this.accountName = opt.accountName;
+
+    // Reset data.
+    this.isLoading = true;
+    this.Items = [];
+    this.QueuedItems = [];
+    this.canFetchMore = false;
+  }
+
+  /* Private methods */
 
   private processResult(result: CacheableItem<Expense[]>) {
     this.expenseData = result;
     this.QueuedItems = this.expenseService.getQueuedNewExpenses(this.accountName);
-    this.isLoading = false;
+    this.isLoading = result.isBackgroundLoading;
     if (result.data) {
       this.canFetchMore = result.data && result.data.length === environment.expenseItemsPerPage;
       this.refreshView();
@@ -169,7 +178,6 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
     } else {
       this.Items = [];
       this.error = result.error;
-      this.isLoading = false;
       this.canFetchMore = false;
     }
   }

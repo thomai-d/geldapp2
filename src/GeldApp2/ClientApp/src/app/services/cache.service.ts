@@ -9,9 +9,14 @@ export enum ItemState {
 
 export class CacheableItem<T> {
   data: T;
+
   timestamp: number;
+
   state: ItemState;
+
   error: string;
+
+  isBackgroundLoading: boolean;
 
   private constructor() { }
 
@@ -23,11 +28,12 @@ export class CacheableItem<T> {
     return i;
   }
 
-  static live<T>(data: T): CacheableItem<T> {
+  static live<T>(data: T, isBackgroundLoading: boolean = false): CacheableItem<T> {
     const i = new CacheableItem<T>();
     i.data = data;
     i.state = ItemState.Online;
     i.timestamp = Date.now();
+    i.isBackgroundLoading = isBackgroundLoading;
     return i;
   }
 
@@ -48,6 +54,11 @@ export class CacheableItem<T> {
 
   getTimestamp() {
     return new Date(this.timestamp);
+  }
+
+  isNewerThan(milliseconds: number): boolean {
+    const delta = Date.now() - this.timestamp;
+    return (delta < milliseconds);
   }
 }
 

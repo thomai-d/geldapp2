@@ -1,10 +1,28 @@
-import { Component, OnInit, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges } from '@angular/core';
 import { CacheableItem, ItemState } from 'src/app/services/cache.service';
+import { trigger, style, state, transition, animate } from '@angular/animations';
 
 @Component({
   selector: 'app-cache-state',
   templateUrl: './cache-state.component.html',
-  styleUrls: ['./cache-state.component.css']
+  styleUrls: ['./cache-state.component.css'],
+  animations: [
+    trigger('showHide', [
+      state('*', style({
+        height: '0px',
+        opacity: '0'
+      })),
+      state('show', style({
+        height: '*',
+        opacity: '1'
+      })),
+      state('hide', style({
+        height: '0px',
+        opacity: '0'
+      })),
+      transition('show <=> hide', animate('0.5s ease-in'))
+    ])
+  ]
 })
 export class CacheStateComponent implements OnChanges {
 
@@ -25,6 +43,9 @@ export class CacheStateComponent implements OnChanges {
     }
 
     switch (this.item.state) {
+      case ItemState.Online:
+        this.show = false;
+        break;
       case ItemState.Cached:
         this.show = true;
         this.text = `Letzte Aktualisierung: ${this.item.getTimestamp().toLocaleString()}`;

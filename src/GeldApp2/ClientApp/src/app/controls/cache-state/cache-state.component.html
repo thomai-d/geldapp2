@@ -1,3 +1,7 @@
-<mat-card *ngIf="show" style="max-width: 600px; margin:auto;">
-  <p [ngClass]="{ 'warn': !isError, 'error': isError }">{{text}}</p>
-</mat-card>
+<div class="container" [@showHide]="show ? 'show' : 'hide'">
+  <mat-card fxFlex="0 1 600px" style="margin: auto; overflow: hidden;" fxLayout fxLayoutAlign="space-between center">
+    <p class="no-margin" [ngClass]="{ 'warn': !isError, 'error': isError }">{{text}}</p>
+    <mat-progress-spinner diameter="25" mode="indeterminate" color="accent"
+      *ngIf="this.item && this.item.isBackgroundLoading"></mat-progress-spinner>
+  </mat-card>
+</div>
