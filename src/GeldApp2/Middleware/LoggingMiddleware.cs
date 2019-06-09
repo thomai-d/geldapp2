@@ -45,10 +45,11 @@ namespace GeldApp2.Middleware
                     watch.Stop();
                     this.log.LogInformation(
                         Events.HandleRequestSuccess,
-                        "{Method} {RequestPath} took {ElapsedMilliseconds}ms",
+                        "{Method} {RequestPath} took {ElapsedMilliseconds}ms (Returned: {StatusCode})",
                         context.Request.Method,
                         context.Request.Path,
-                        watch.ElapsedMilliseconds);
+                        watch.ElapsedMilliseconds,
+                        context.Response.StatusCode);
                 }
                 catch (ValidationException ex)
                 {
