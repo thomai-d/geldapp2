@@ -11,7 +11,6 @@ using Serilog.Events;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
-using System.Linq;
 using System.Security.Authentication;
 using System.Threading.Tasks;
 

@@ -107,15 +107,6 @@ export class ExpenseService {
     return [];
   }
 
-  private getCachedExpenses(accountName: string) {
-    const cacheKey = this.latestExpensesCacheKey(accountName);
-    const cachedItem = this.cache.get<Expense[]>(cacheKey);
-    if (cachedItem) {
-      cachedItem.data = this.replaceWithLocal(accountName, cachedItem.data);
-    }
-    return cachedItem;
-  }
-
   // Fetches the expenses from the server, replacing local expenses.
   // Queued expenses are not returned.
   public getExpenses(accountName: string, searchText: string, limit: number, includeFuture: boolean)
@@ -197,6 +188,9 @@ export class ExpenseService {
   // Fallback is storing it locally and pushing it later.
   public async saveExpense(expense: Expense) {
       try {
+
+        this.saveExpenseLocally(expense);
+
         if (expense.id <= 0) {
           this.log.info('services.expense', `Creating expense for ${expense.categoryName} > ${expense.subcategoryName}`);
           await this.api.createExpense(expense);
@@ -209,7 +203,6 @@ export class ExpenseService {
         this.dialogService.showSnackbar('Eintrag wurde in der Cloud gespeichert.');
       } catch (ex) {
         if (isOfflineException(ex)) {
-          this.saveExpenseLocally(expense);
           this.dialogService.showSnackbar('Eintrag wurde lokal gespeichert und wird später übertragen.', 5000);
           return;
         }
@@ -261,6 +254,15 @@ export class ExpenseService {
   }
 
   /* Private methods */
+
+  private getCachedExpenses(accountName: string) {
+    const cacheKey = this.latestExpensesCacheKey(accountName);
+    const cachedItem = this.cache.get<Expense[]>(cacheKey);
+    if (cachedItem) {
+      cachedItem.data = this.replaceWithLocal(accountName, cachedItem.data);
+    }
+    return cachedItem;
+  }
 
   private saveExpenseLocally(expense: Expense) {
 

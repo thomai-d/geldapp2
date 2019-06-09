@@ -16,16 +16,6 @@ import { ToolbarService, ToolbarItem } from 'src/app/services/toolbar.service';
 })
 export class ExpenseFormComponent implements OnInit, OnDestroy {
 
-  @Input() public expense: Expense;
-
-  @Output() public confirmed = new EventEmitter<Expense>();
-
-  @Output() public delete = new EventEmitter<Expense>();
-
-  @ViewChild('createdDate') datePicker: any;
-
-  public accountName: string;
-
   private selectedCategory: Category;
 
   private formChangedSubscriptions: Subscription[] = [];
@@ -53,10 +43,23 @@ export class ExpenseFormComponent implements OnInit, OnDestroy {
     private router: Router,
     private formBuilder: FormBuilder) {
 
-    this.saveButton = new ToolbarItem('done', () => this.onSubmit(), () => this.isInEditMode, () => this.expenseForm.valid);
-    this.editButton = new ToolbarItem('edit', async () => this.startEditMode(), () => this.expense && !this.isInEditMode);
-    this.deleteButton = new ToolbarItem('delete', () => this.onDelete(), () => !this.isInEditMode && !!this.expense);
+    this.saveButton = new ToolbarItem('done', () => this.onSubmit(),
+                                              () => this.isInEditMode && this.isToolbarVisible, () => this.expenseForm.valid);
+    this.editButton = new ToolbarItem('edit', async () => this.startEditMode(),
+                                                    () => this.expense && !this.isInEditMode && this.isToolbarVisible);
+    this.deleteButton = new ToolbarItem('delete', () => this.onDelete(),
+                                                  () => !this.isInEditMode && !!this.expense && this.isToolbarVisible);
   }
+
+  @Input() public expense: Expense;
+
+  @Output() public confirmed = new EventEmitter<Expense>();
+
+  @Output() public delete = new EventEmitter<Expense>();
+
+  @ViewChild('createdDate') datePicker: any;
+
+  public accountName: string;
 
   public categories: Category[] = [];
 
@@ -67,6 +70,8 @@ export class ExpenseFormComponent implements OnInit, OnDestroy {
   public isToni = false;
 
   public isInEditMode = false;
+
+  public isToolbarVisible = true;
 
   public expenseTypeDisplay = '';
 
@@ -121,6 +126,8 @@ export class ExpenseFormComponent implements OnInit, OnDestroy {
     expense.lastModified = now.toISOString();
 
     this.confirmed.next(expense);
+    this.isInEditMode = false;
+    this.isToolbarVisible = false;
   }
 
   async onDelete() {
