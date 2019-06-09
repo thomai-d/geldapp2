@@ -9,11 +9,19 @@ import { Progress } from '../dialogs/progress-dialog/progress-dialog.component';
 import { Observable, Subject, Observer } from 'rxjs';
 import { UserService } from './user.service';
 
+export interface ExpenseResult {
+  expenses: CacheableItem<Expense[]>;
+  queued: Expense[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class ExpenseService {
 
   // Timespan in [ms] within which the cached expense list is reported as 'online'.
   static readonly AssumeOnlineTimeMs = 60000;
+
+  // Expenses that are synced right now.
+  private syncTasks: Promise<void>[] = [];
 
   // Local expenses contain expenses which were modified in offline mode.
   // Expense.Ids < 0 indicate expenses which are new, others are modified versions of existing ex
@@ -83,18 +91,6 @@ export class ExpenseService {
     }
   }
 
-  // Returns all new expenses that are queued.
-  public getQueuedNewExpenses(accountName: string): Expense[] {
-
-    const cacheKey = this.queuedExpensesCacheKey(accountName);
-    const cachedItem = this.cache.get<Expense[]>(cacheKey);
-    if (cachedItem) {
-      return cachedItem.data.filter(e => e.id < 0);
-    }
-
-    return [];
-  }
-
   // Returns all (including edited existing) expenses that are queued.
   public getQueuedExpenses(accountName: string): Expense[] {
 
@@ -110,68 +106,34 @@ export class ExpenseService {
   // Fetches the expenses from the server, replacing local expenses.
   // Queued expenses are not returned.
   public getExpenses(accountName: string, searchText: string, limit: number, includeFuture: boolean)
-                  : Observable<CacheableItem<Expense[]>> {
+    : Observable<ExpenseResult> {
 
-    return new Observable<CacheableItem<Expense[]>>(subj => {
-
-    if (!searchText) {
-      const cachedItem = this.getCachedExpenses(accountName);
-      if (cachedItem) {
-        if (cachedItem.isNewerThan(ExpenseService.AssumeOnlineTimeMs)) {
-          cachedItem.state = ItemState.Online;
-        } else {
-          cachedItem.isBackgroundLoading = true;
-        }
-
-        subj.next(cachedItem);
-      }
-    } else {
-      subj.next(CacheableItem.live([], true));
-    }
-
-      this.fetchExpensesFromServer(subj, accountName, searchText, limit, includeFuture);
-    });
-  }
-
-  private async fetchExpensesFromServer(
-    subj: Observer<CacheableItem<Expense[]>>,
-    accountName: string,
-    searchText: string,
-    limit: number,
-    includeFuture: boolean) {
-
-    try {
-      const cacheKey = this.latestExpensesCacheKey(accountName);
-      const expenses = await this.api.getExpenses(accountName, searchText, limit, 0, includeFuture);
+    return new Observable<ExpenseResult>(subj => {
 
       if (!searchText) {
-        this.cache.set(cacheKey, expenses);
-      }
-
-      const finalExpenses = this.replaceWithLocal(accountName, expenses);
-      subj.next(CacheableItem.live<Expense[]>(finalExpenses));
-      subj.complete();
-    } catch (ex) {
-
-
-      if (isOfflineException(ex)) {
         const cachedItem = this.getCachedExpenses(accountName);
         if (cachedItem) {
-          subj.next(cachedItem);
-        } else {
-          subj.next(CacheableItem.offline());
+          if (cachedItem.isNewerThan(ExpenseService.AssumeOnlineTimeMs)) {
+            cachedItem.state = ItemState.Online;
+          } else {
+            cachedItem.isBackgroundLoading = true;
+          }
+
+          cachedItem.data = this.replaceWithLocal(accountName, cachedItem.data);
+          subj.next({
+            expenses: cachedItem,
+            queued: this.getQueuedNewExpenses(accountName)
+          });
         }
-        return;
+      } else {
+        subj.next({
+          expenses: CacheableItem.live([], true),
+          queued: this.getQueuedNewExpenses(accountName),
+        });
       }
 
-      if (ex.status === 400 && ex.error && ex.error.errorType === 'FilterParseException') {
-        subj.next(CacheableItem.error('Ungültiger Filterausdruck'));
-        return;
-      }
-
-      this.log.error('services.expense', `Error while fetching expenses: ${JSON.stringify(ex)}`);
-      subj.error(CacheableItem.error('Unbekannter Fehler'));
-    }
+      this.fetchExpensesFromServerLoop(subj, accountName, searchText, limit, includeFuture);
+    });
   }
 
   public async deleteExpense(expense: Expense) {
@@ -187,29 +149,22 @@ export class ExpenseService {
   // Saves the expense by directly pushing it to the server.
   // Fallback is storing it locally and pushing it later.
   public async saveExpense(expense: Expense) {
-      try {
+    try {
 
-        this.saveExpenseLocally(expense);
+      this.saveExpenseLocally(expense);
 
-        if (expense.id <= 0) {
-          this.log.info('services.expense', `Creating expense for ${expense.categoryName} > ${expense.subcategoryName}`);
-          await this.api.createExpense(expense);
-        } else {
-          this.log.info('services.expense', `Updating expense ${expense.id} for ${expense.categoryName} > ${expense.subcategoryName}`);
-          await this.api.updateExpense(expense);
-        }
+      await this.publishExpense(expense);
 
-        this.removeFromLocalQueue(expense.accountName, expense.id);
-        this.dialogService.showSnackbar('Eintrag wurde in der Cloud gespeichert.');
-      } catch (ex) {
-        if (isOfflineException(ex)) {
-          this.dialogService.showSnackbar('Eintrag wurde lokal gespeichert und wird später übertragen.', 5000);
-          return;
-        }
-
-        this.log.error('services.expense-service', `Error pushing expense to server: ${JSON.stringify(ex)}`);
-        throw ex;
+      this.dialogService.showSnackbar('Eintrag wurde in der Cloud gespeichert.');
+    } catch (ex) {
+      if (isOfflineException(ex)) {
+        this.dialogService.showSnackbar('Eintrag wurde lokal gespeichert und wird später übertragen.', 5000);
+        return;
       }
+
+      this.log.error('services.expense-service', `Error pushing expense to server: ${JSON.stringify(ex)}`);
+      throw ex;
+    }
   }
 
   public syncQueuedExpenses(accountName: string): Observable<Progress> {
@@ -225,14 +180,9 @@ export class ExpenseService {
     progress.next(statusFn());
 
     setTimeout(async () => {
-      for (const item of queued) {
+      for (const expense of queued) {
         try {
-          if (item.id < 0) {
-            await this.api.createExpense(item);
-          } else {
-            await this.api.updateExpense(item);
-          }
-          this.removeFromLocalQueue(accountName, item.id);
+          await this.publishExpense(expense);
         } catch (ex) {
           errors++;
           this.log.error('services.expense-service', `Error while syncing expense: ${JSON.stringify(ex)}`);
@@ -254,6 +204,97 @@ export class ExpenseService {
   }
 
   /* Private methods */
+
+  private async fetchExpensesFromServerLoop(
+    subj: Observer<ExpenseResult>,
+    accountName: string,
+    searchText: string,
+    limit: number,
+    includeFuture: boolean) {
+      let fetchAgain = true;
+
+      while (fetchAgain) {
+        fetchAgain = this.syncTasks.length > 0;
+
+        await this.fetchExpensesFromServer(subj, accountName, searchText, limit, includeFuture);
+
+        if (fetchAgain) {
+          this.log.debug('services.expense', `There were ${this.syncTasks.length} pending task(s). Fetching again.`);
+        }
+
+        if (this.syncTasks.length > 0) {
+          await Promise.all(this.syncTasks);
+        }
+      }
+  }
+
+  private async fetchExpensesFromServer(
+    subj: Observer<ExpenseResult>,
+    accountName: string,
+    searchText: string,
+    limit: number,
+    includeFuture: boolean) {
+
+    try {
+      const cacheKey = this.latestExpensesCacheKey(accountName);
+      const expenses = await this.api.getExpenses(accountName, searchText, limit, 0, includeFuture);
+
+      if (!searchText) {
+        this.cache.set(cacheKey, expenses);
+      }
+
+      const finalExpenses = this.replaceWithLocal(accountName, expenses);
+      subj.next({
+        expenses: CacheableItem.live<Expense[]>(finalExpenses),
+        queued: this.getQueuedNewExpenses(accountName)
+      });
+      subj.complete();
+    } catch (ex) {
+
+
+      if (isOfflineException(ex)) {
+        const cachedItem = this.getCachedExpenses(accountName);
+        subj.next({
+          expenses: cachedItem ? cachedItem : CacheableItem.offline(),
+          queued: this.getQueuedNewExpenses(accountName)
+        });
+        return;
+      }
+
+      if (ex.status === 400 && ex.error && ex.error.errorType === 'FilterParseException') {
+        subj.next({
+          expenses: CacheableItem.error('Ungültiger Filterausdruck'),
+          queued: this.getQueuedNewExpenses(accountName)
+        });
+        return;
+      }
+
+      this.log.error('services.expense', `Error while fetching expenses: ${JSON.stringify(ex)}`);
+      subj.error(CacheableItem.error('Unbekannter Fehler'));
+    }
+  }
+
+  private async publishExpense(expense: Expense): Promise<void> {
+
+    let task: Promise<void>;
+
+    try {
+      if (expense.id <= 0) {
+        this.log.info('services.expense', `Creating expense for ${expense.categoryName} > ${expense.subcategoryName}`);
+        task = this.api.createExpense(expense);
+      } else {
+        this.log.info('services.expense', `Updating expense ${expense.id} for ${expense.categoryName} > ${expense.subcategoryName}`);
+        task = this.api.updateExpense(expense);
+      }
+
+      this.syncTasks.push(task);
+      await task;
+    } finally {
+      this.syncTasks.splice(this.syncTasks.indexOf(task), 1);
+    }
+
+    this.removeFromLocalQueue(expense.accountName, expense.id);
+  }
 
   private getCachedExpenses(accountName: string) {
     const cacheKey = this.latestExpensesCacheKey(accountName);
@@ -286,7 +327,18 @@ export class ExpenseService {
 
     expenseQueue.push(expense);
     this.cache.set(cacheKey, expenseQueue);
-    this.log.info('services.expense-service', `Expense ${expense.id} is kept local.`);
+  }
+
+  // Returns all new expenses that are queued.
+  private getQueuedNewExpenses(accountName: string): Expense[] {
+
+    const cacheKey = this.queuedExpensesCacheKey(accountName);
+    const cachedItem = this.cache.get<Expense[]>(cacheKey);
+    if (cachedItem) {
+      return cachedItem.data.filter(e => e.id < 0);
+    }
+
+    return [];
   }
 
   private removeFromLocalQueue(accountName: string, expenseId: number) {
@@ -299,7 +351,7 @@ export class ExpenseService {
   }
 
   private replaceWithLocal(accountName: string, expenses: Expense[])
-          : Expense[] {
+    : Expense[] {
     const cacheKey = this.queuedExpensesCacheKey(accountName);
     const localItem = this.cache.get<Expense[]>(cacheKey);
     if (!localItem) { return expenses; }

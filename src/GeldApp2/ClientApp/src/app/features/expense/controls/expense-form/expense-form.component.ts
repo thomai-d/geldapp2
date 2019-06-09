@@ -82,7 +82,7 @@ export class ExpenseFormComponent implements OnInit, OnDestroy {
         this.isInEditMode = fragment === 'edit';
         if (!this.accountName) { this.router.navigate(['']); }
         await this.refresh();
-        this.toolbarService.setButtons([ this.saveButton, this.deleteButton, this.editButton ]);
+        this.toolbarService.setButtons([ this.saveButton, this.editButton, this.deleteButton ]);
       });
   }
 

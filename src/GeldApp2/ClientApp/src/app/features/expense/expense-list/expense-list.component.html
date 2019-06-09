@@ -21,26 +21,26 @@
     <mat-slide-toggle class="toggle-future" color="primary" [formControl]="includeFuture">Künftige Einträge anzeigen</mat-slide-toggle>
 
   </mat-card>
-  
+
   <!-- Add -->
   <button class="add-button-bigscreen" fxFlexAlign="end" fxHide.lt-lg="true" mat-raised-button color="primary" [routerLink]="'./new'">Neuer Eintrag</button>
 
   <!-- Local queued expenses -->
-  <div *ngIf="this.QueuedItems && this.QueuedItems.length">
+  <div *ngIf="queuedItems && queuedItems.length">
     <div class="text-centered text-italic expense-header">
       <button class="cursor-hand float-right" style="margin-bottom: -1.2em;" mat-button (click)="sync()">
-        <mat-icon [matBadge]="this.QueuedItems.length" matBadgeColor="accent">sync</mat-icon>
+        <mat-icon [matBadge]="queuedItems.length" matBadgeColor="accent">sync</mat-icon>
       </button>
       <span class="float-clear" style="display:block;">Lokal gespeichert</span>
     </div>
-    <div *ngFor="let item of this.QueuedItems" class="queued-list">
+    <div *ngFor="let item of queuedItems" class="queued-list">
       <app-expense-item [expense]="item" (click)="onClickExpense(item)"></app-expense-item>
     </div>
   </div>
 
   <!-- Commited expenses -->
-  <div *ngIf="this.Items">
-    <div *ngFor="let item of Items">
+  <div *ngIf="items">
+    <div *ngFor="let item of items">
       <!-- Header-Item -->
       <div class="text-centered text-italic expense-header" *ngIf="isHeader(item)">{{item}}</div>
       <!-- Expense-Item -->
@@ -51,13 +51,9 @@
       <button (click)="fetchMore()" *ngIf="canFetchMore" mat-button fxFlex="1 0 auto">Mehr laden ...</button>
     </div>
   </div>
-  
+
   <div fxLayout fxLayoutAlign="center" *ngIf="isLoading">
     <mat-progress-spinner diameter="60" mode="indeterminate" fxLayoutAlign="center"></mat-progress-spinner>
-  </div>
-  
-  <div fxLayout fxLayoutAlign="center" *ngIf="!isLoading && error">
-    <span class="error">{{error}}</span>
   </div>
 
   <div class="bottom-spacer"></div>

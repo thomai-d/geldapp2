@@ -1,10 +1,11 @@
-import { ExpenseService } from './../../../services/expense.service';
-import { CacheableItem } from 'src/app/services/cache.service';
+import { BaseComponent } from 'src/app/controls/base-component';
+import { ExpenseService, ExpenseResult } from 'src/app/services/expense.service';
+import { CacheableItem, ItemState } from 'src/app/services/cache.service';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
-import { GeldAppApi } from '../../../api/geldapp-api';
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { GeldAppApi } from 'src/app/api/geldapp-api';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Expense } from 'src/app/api/model/expense';
-import { Subscription, combineLatest, BehaviorSubject, concat, of } from 'rxjs';
+import { combineLatest, BehaviorSubject, concat, of } from 'rxjs';
 import { switchMap, debounceTime, tap, map } from 'rxjs/operators';
 import { FormControl } from '@angular/forms';
 import { environment } from 'src/environments/environment';
@@ -18,11 +19,11 @@ import { ExpenseQueryOptions } from './expense-list-query-options';
   templateUrl: './expense-list.component.html',
   styleUrls: ['./expense-list.component.css'],
 })
-export class ExpenseListComponent implements OnInit, OnDestroy {
+export class ExpenseListComponent
+ extends BaseComponent
+ implements OnInit {
 
   DATE_STR = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
-
-  private subscriptions: Subscription[] = [];
 
   private accountName: string;
 
@@ -38,27 +39,26 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
     private api: GeldAppApi,
     private router: Router
   ) {
+    super();
     this.toolbarSearch = new ToolbarItem('search', async () => {
       this.isSearchEnabled = true;
       setTimeout(() => this.search.nativeElement.focus(), 30);
     }, () => !this.isSearchEnabled);
   }
 
-  public QueuedItems: Expense[];
+  // Display data.
+  queuedItems: Expense[];
+  items: (Expense | string)[];
+  expenseData: CacheableItem<Expense[]>;
 
-  public Items: (Expense | string)[];
+  // State.
+  isLoading: boolean;
+  canFetchMore = false;
 
-  public isLoading: boolean;
-
-  public isSearchEnabled = false;
-  public searchText = new FormControl('');
-  public includeFuture = new FormControl(false);
-
-  public error: string;
-
-  public canFetchMore = false;
-
-  public expenseData: CacheableItem<Expense[]>;
+  // Search form.
+  isSearchEnabled = false;
+  searchText = new FormControl('');
+  includeFuture = new FormControl(false);
 
   @ViewChild('search') search: ElementRef;
 
@@ -86,14 +86,12 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
                                                          environment.expenseItemsPerPage, opt.includeFuture)));
 
     this.subscriptions.push(stream.subscribe(result => {
-      this.canFetchMore = result.data && result.data.length !== environment.expenseItemsPerPage;
+      this.canFetchMore = result.expenses.data
+                          && result.expenses.data.length !== environment.expenseItemsPerPage;
+
       this.toolbar.setButtons([this.toolbarSearch]);
       this.processResult(result);
     }));
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.forEach(obs => obs.unsubscribe());
   }
 
   async onClickExpense(expense: Expense) {
@@ -130,7 +128,6 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
       () => this.dialogService.showSnackbar('Synchronisierung erfolgreich!'));
 
     await this.dialogService.showProgress(obs);
-    this.QueuedItems = this.expenseService.getQueuedNewExpenses(this.accountName);
     this.forceRefreshSub.next(false);
   }
 
@@ -160,24 +157,24 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
 
     // Reset data.
     this.isLoading = true;
-    this.Items = [];
-    this.QueuedItems = [];
+    this.items = [];
+    this.queuedItems = [];
     this.canFetchMore = false;
   }
 
   /* Private methods */
 
-  private processResult(result: CacheableItem<Expense[]>) {
-    this.expenseData = result;
-    this.QueuedItems = this.expenseService.getQueuedNewExpenses(this.accountName);
-    this.isLoading = result.isBackgroundLoading;
-    if (result.data) {
-      this.canFetchMore = result.data && result.data.length === environment.expenseItemsPerPage;
+  private processResult(result: ExpenseResult) {
+    this.expenseData = result.expenses;
+    this.queuedItems = result.queued;
+    this.isLoading = result.expenses.isBackgroundLoading;
+    if (result.expenses.data) {
+      this.canFetchMore = result.expenses.state === ItemState.Online
+                            && result.expenses.data
+                            && result.expenses.data.length === environment.expenseItemsPerPage;
       this.refreshView();
-      this.error = null;
     } else {
-      this.Items = [];
-      this.error = result.error;
+      this.items = [];
       this.canFetchMore = false;
     }
   }
@@ -185,15 +182,15 @@ export class ExpenseListComponent implements OnInit, OnDestroy {
   private refreshView() {
     let lastElement: Expense = null;
 
-    this.Items = [];
+    this.items = [];
     for (const x of this.expenseData.data) {
 
       if (!lastElement || (lastElement && !this.isSameMonth(lastElement, x))) {
         const date = new Date(x.date);
-        this.Items.push(`${this.DATE_STR[date.getMonth()]} ${date.getFullYear()}`);
+        this.items.push(`${this.DATE_STR[date.getMonth()]} ${date.getFullYear()}`);
       }
 
-      this.Items.push(x);
+      this.items.push(x);
       lastElement = x;
     }
   }
