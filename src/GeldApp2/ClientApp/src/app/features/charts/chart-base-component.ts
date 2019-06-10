@@ -9,7 +9,7 @@ export abstract class ChartBaseComponent implements OnInit, OnDestroy {
   protected subscriptions: Subscription[] = [];
 
   constructor(
-    private activatedRoute: ActivatedRoute,
+    protected activatedRoute: ActivatedRoute,
     protected router: Router
   ) { }
 

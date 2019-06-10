@@ -1,8 +1,8 @@
 <form fxLayout="row wrap">
-  <app-category-selector [categories]="categories" label="1" [(selection)]="category1" (selectionChange)="refreshChart()"></app-category-selector>
-  <app-category-selector [categories]="categories" label="2" [(selection)]="category2" (selectionChange)="refreshChart()"></app-category-selector>
-  <app-category-selector [categories]="categories" label="3" [(selection)]="category3" (selectionChange)="refreshChart()"></app-category-selector>
-  <app-category-selector [categories]="categories" label="4" [(selection)]="category4" (selectionChange)="refreshChart()"></app-category-selector>
+  <app-category-selector [categories]="categories" label="1" [(selection)]="category1" (selectionChange)="onSelectionChanged()"></app-category-selector>
+  <app-category-selector [categories]="categories" label="2" [(selection)]="category2" (selectionChange)="onSelectionChanged()"></app-category-selector>
+  <app-category-selector [categories]="categories" label="3" [(selection)]="category3" (selectionChange)="onSelectionChanged()"></app-category-selector>
+  <app-category-selector [categories]="categories" label="4" [(selection)]="category4" (selectionChange)="onSelectionChanged()"></app-category-selector>
 </form>
 
 <div fxLayout="column">

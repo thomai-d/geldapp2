@@ -6,7 +6,7 @@
 
   <mat-form-field *ngIf="!selectSubcategory">
     <mat-label>Kategorie {{label}}</mat-label>
-    <select matNativeControl [(ngModel)]="selection">
+    <select matNativeControl [(ngModel)]="selection" [compareWith]="compareFn">
       <option [ngValue]="[]">-</option>
       <option *ngFor="let cat of categories" [ngValue]="[cat.name]">{{cat.name}}</option>
     </select>
@@ -14,7 +14,7 @@
 
   <mat-form-field *ngIf="selectSubcategory">
     <mat-label>Unterkategorie {{label}}</mat-label>
-    <select matNativeControl [(ngModel)]="selection">
+    <select matNativeControl [(ngModel)]="selection" [compareWith]="compareFn">
       <option [ngValue]="[]">-</option>
       <optGroup *ngFor="let cat of categories" [label]="cat.name">
         <option *ngFor="let subcat of cat.subcategories" [ngValue]="[cat.name, subcat]">{{subcat}}</option>
