@@ -55,4 +55,6 @@ To get it running, set the following env variables (see dev-env folder for a sma
 | AuthenticationSettings__JwtTokenSecret | JWT Token secret.                                                                      | 
 | SeqTarget                              | Seq-Server target host (optional).                                                     |
 
-You might set those values on your dev-machine with `dotnet user-secrets set MysqlConnectionString "Server=localhost;Database=geldapp;User=root;Password=xxx"`
+You might set the secrets on your dev-machine with 
+`dotnet user-secrets set MysqlConnectionString "Server=localhost;Database=geldapp;User=root;Password=xxx"`
+`dotnet user-secrets set "AuthenticationSettings:JwtTokenSecret" "Secret"
