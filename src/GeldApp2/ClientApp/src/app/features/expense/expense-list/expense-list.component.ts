@@ -32,9 +32,9 @@ export class ExpenseListComponent
   private toolbarSearch: ToolbarItem;
 
   constructor(
+    public expenseService: ExpenseService,
     private dialogService: DialogService,
     private activatedRoute: ActivatedRoute,
-    private expenseService: ExpenseService,
     private toolbar: ToolbarService,
     private api: GeldAppApi,
     private router: Router

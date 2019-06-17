@@ -28,7 +28,7 @@
   <!-- Local queued expenses -->
   <div *ngIf="queuedItems && queuedItems.length">
     <div class="text-centered text-italic expense-header">
-      <button class="cursor-hand float-right" style="margin-bottom: -1.2em;" mat-button (click)="sync()">
+      <button class="cursor-hand float-right" style="margin-bottom: -1.2em;" mat-button (click)="sync()" *ngIf="this.expenseService.canSynchronize()">
         <mat-icon [matBadge]="queuedItems.length" matBadgeColor="accent">sync</mat-icon>
       </button>
       <span class="float-clear" style="display:block;">Lokal gespeichert</span>

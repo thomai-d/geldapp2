@@ -167,7 +167,15 @@ export class ExpenseService {
     }
   }
 
+  public canSynchronize() {
+    return this.syncTasks.length === 0;
+  }
+
   public syncQueuedExpenses(accountName: string): Observable<Progress> {
+
+    if (this.syncTasks.length) {
+      throw new Error('Sync in progress.');
+    }
 
     const queued = this.getQueuedExpenses(accountName);
     const progress = new Subject<Progress>();
