@@ -22,8 +22,14 @@ export class InfoComponent implements OnInit, OnDestroy {
   releaseDate: string;
   media: string;
   mediaQuery: string;
+  token: string;
 
   ngOnInit() {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      this.token = token.substr(0, 6) + '...' + token.substr(token.length - 6);
+    }
+
     this.version = environment.version;
     this.releaseDate = environment.versionDate;
     this.subscriptions.push(this.mediaObserver.asObservable()

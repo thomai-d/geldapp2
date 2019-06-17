@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace GeldApp2.Application.Logging
 {
@@ -17,5 +18,9 @@ namespace GeldApp2.Application.Logging
         public const int HandleRequestUserFailed = 1004;
 
         public const int IpBlocked = 1005;
+
+        public const int Login = 1006;
+
+        public const int RefreshToken = 1007;
     }
 }

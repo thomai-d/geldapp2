@@ -1,6 +1,8 @@
-﻿using GeldApp2.Application.Services;
+﻿using GeldApp2.Application.Logging;
+using GeldApp2.Application.Services;
 using GeldApp2.Database;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Security.Authentication;
@@ -29,11 +31,13 @@ namespace GeldApp2.Application.Commands.User
     {
         private readonly GeldAppContext db;
         private readonly IJwtTokenService jwtTokenService;
+        private readonly ILogger<LoginCommandHandler> log;
 
-        public LoginCommandHandler(GeldAppContext db, IJwtTokenService jwtTokenService)
+        public LoginCommandHandler(GeldAppContext db, IJwtTokenService jwtTokenService, ILogger<LoginCommandHandler> log)
         {
             this.db = db;
             this.jwtTokenService = jwtTokenService;
+            this.log = log;
         }
         public async Task<LoginResult> Handle(LoginCommand cmd, CancellationToken cancellationToken)
         {
@@ -50,6 +54,8 @@ namespace GeldApp2.Application.Commands.User
             await this.db.SaveChangesAsync();
 
             var token = await this.jwtTokenService.GetTokenStringAsync(user);
+            var tokenPart = $"{token.Substring(0, 6)}...{token.Substring(token.Length - 6)}";
+            this.log.LogInformation(Events.Login, "{user} logged in. Token = {token}", user.Name, tokenPart);
             return new LoginResult
             {
                 Token = token,

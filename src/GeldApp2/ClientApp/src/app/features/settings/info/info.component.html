@@ -33,6 +33,10 @@
             <td class="mat-cell">Token-Gültigkeit</td>
             <td class="mat-cell">{{userService.tokenExpiry$ | async | date:'yyyy-MM-dd HH:mm:ss'}}</td>
           </tr>
+          <tr class="mat-row">
+            <td class="mat-cell">Token</td>
+            <td class="mat-cell">{{token}}</td>
+          </tr>
         </tbody>
       </table>
     </mat-card-content>

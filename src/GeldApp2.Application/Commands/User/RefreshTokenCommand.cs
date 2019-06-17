@@ -1,6 +1,8 @@
-﻿using GeldApp2.Application.Services;
+﻿using GeldApp2.Application.Logging;
+using GeldApp2.Application.Services;
 using GeldApp2.Database;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Security.Authentication;
@@ -29,10 +31,12 @@ namespace GeldApp2.Application.Commands.User
     {
         private readonly GeldAppContext db;
         private readonly IJwtTokenService jwtTokenService;
+        private readonly ILogger<RefreshTokenCommandHandler> log;
 
-        public RefreshTokenCommandHandler(GeldAppContext db, IJwtTokenService jwtTokenService)
+        public RefreshTokenCommandHandler(GeldAppContext db, IJwtTokenService jwtTokenService, ILogger<RefreshTokenCommandHandler> log)
         {
             this.db = db;
+            this.log = log;
             this.jwtTokenService = jwtTokenService;
         }
         public async Task<string> Handle(RefreshTokenCommand cmd, CancellationToken cancellationToken)
@@ -48,7 +52,10 @@ namespace GeldApp2.Application.Commands.User
             user.LastLogin = DateTimeOffset.Now;
             await this.db.SaveChangesAsync();
 
-            return await this.jwtTokenService.GetTokenStringAsync(user);
+            var token = await this.jwtTokenService.GetTokenStringAsync(user);
+            var tokenPart = $"{token.Substring(0, 6)}...{token.Substring(token.Length - 6)}";
+            this.log.LogInformation(Events.RefreshToken, "{user} refreshed token. Token = {token}", user.Name, tokenPart);
+            return token;
         }
     }
 }
