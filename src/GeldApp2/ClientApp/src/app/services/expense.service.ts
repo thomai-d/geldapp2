@@ -226,6 +226,8 @@ export class ExpenseService {
           await Promise.all(this.syncTasks);
         }
       }
+
+      subj.complete();
   }
 
   private async fetchExpensesFromServer(
@@ -248,7 +250,6 @@ export class ExpenseService {
         expenses: CacheableItem.live<Expense[]>(finalExpenses),
         queued: this.getQueuedNewExpenses(accountName)
       });
-      subj.complete();
     } catch (ex) {
 
 

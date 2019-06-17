@@ -17,7 +17,6 @@ export class AddExpenseComponent implements OnInit {
   constructor(
     private expenseService: ExpenseService,
     private dialogService: DialogService,
-    private log: Logger,
     private router: Router) {
   }
 
