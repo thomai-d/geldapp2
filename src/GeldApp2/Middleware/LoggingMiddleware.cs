@@ -68,6 +68,12 @@ namespace GeldApp2.Middleware
                     context.Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
                     await context.Response.WriteAsync(JsonConvert.SerializeObject(ex.Message));
                 }
+                catch (UnauthorizedException ex)
+                {
+                    this.LogError(context, watch, ex);
+                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    this.ipBlockerService.CountViolation(context.GetRemoteIp());
+                }
                 catch (AuthenticationException ex)
                 {
                     this.LogError(context, watch, ex);

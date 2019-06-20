@@ -48,6 +48,11 @@ namespace GeldApp2.IntegrationTests
             resp.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
+        public static void IsForbidden(this HttpResponseMessage resp)
+        {
+            resp.StatusCode.Should().Be(HttpStatusCode.Forbidden);
+        }
+
         public static void IsUnauthorized(this HttpResponseMessage resp)
         {
             resp.StatusCode.Should().Be(HttpStatusCode.Unauthorized);

@@ -26,7 +26,7 @@ namespace GeldApp2.Application.Behaviors
         public async Task<TResp> Handle(TReq request, CancellationToken cancellationToken, RequestHandlerDelegate<TResp> next)
         {
             if (string.IsNullOrEmpty(request.AccountName))
-                throw new AuthenticationException("Account name not set");
+                throw new ArgumentException("Account name not set", nameof(request));
 
             request.Account = this.currentUser.GetAccount(request.AccountName);
 

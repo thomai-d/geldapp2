@@ -45,7 +45,7 @@ namespace GeldApp2.Database
                         .SingleOrDefault(ua => ua.Account.Name == accountName);
 
             if (userAccount == null)
-                throw new AuthenticationException();
+                throw new AuthenticationException($"Unknown account");
 
             return userAccount.Account;
         }

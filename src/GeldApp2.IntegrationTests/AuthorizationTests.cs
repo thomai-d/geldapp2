@@ -136,7 +136,7 @@ namespace GeldApp2.IntegrationTests
                 
                 // Invalid old password.
                 result = await fixture.Client.PostAsync("/api/auth/changePassword", wrongOldPwd.AsContent());
-                result.IsUnauthorized();
+                result.IsForbidden();
                 
                 // New password too short.
                 result = await fixture.Client.PostAsync("/api/auth/changePassword", passTooShort.AsContent());

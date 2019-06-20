@@ -34,7 +34,7 @@ namespace GeldApp2.Application.Commands.User
         public async Task<bool> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
         {
             if (!request.User.HasPassword(request.OldPassword))
-                throw new AuthenticationException("Wrong old password");
+                throw new UnauthorizedException("Wrong old password");
 
             if (string.IsNullOrEmpty(request.NewPassword) || request.NewPassword.Length < MinPasswordLength)
                 throw new UserException("Password does not satisfy server requirements");

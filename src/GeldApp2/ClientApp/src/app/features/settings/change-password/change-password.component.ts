@@ -47,7 +47,12 @@ export class ChangePasswordComponent implements OnInit {
         return;
       }
 
-      await this.dialogService.showError('Passwort kann nicht geändert werden. Ist das alte Passwort richtig?');
+      if (ex.status === 403) {
+        await this.dialogService.showError('Das alte Passwort ist nicht korrekt.');
+        return;
+      }
+
+      await this.dialogService.showError('Es ist ein Fehler aufgetreten. Das Passwort kann aktuell nicht geändert werden.');
       return;
     }
 
