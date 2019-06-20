@@ -25,6 +25,8 @@ import { ProgressDialogComponent } from './dialogs/progress-dialog/progress-dial
 import { DecisionDialogComponent } from './dialogs/decision-dialog/decision-dialog.component';
 import { TextInputDialogComponent } from './dialogs/text-input-dialog/text-input-dialog.component';
 import { ToolbarComponent } from './controls/toolbar/toolbar.component';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { UnauthorizedInterceptor } from './guards/unauthorized.interceptor';
 
 export function tokenGetter() {
   return localStorage.getItem('authToken');
@@ -63,7 +65,10 @@ export function tokenGetter() {
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
   entryComponents: [ ErrorDialogComponent, ProgressDialogComponent, DecisionDialogComponent, TextInputDialogComponent ],
-  providers: [{ provide: LOCALE_ID, useValue: 'de' }],
+  providers: [
+    { provide: LOCALE_ID, useValue: 'de' },
+    { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {
