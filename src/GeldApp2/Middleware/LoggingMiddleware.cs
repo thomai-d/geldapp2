@@ -127,6 +127,7 @@ namespace GeldApp2.Middleware
 
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
+            logEvent.AddOrUpdateProperty(propertyFactory.CreateProperty("Authentication", this.ctx.GetHttpHeader("Authentication")));
             logEvent.AddOrUpdateProperty(propertyFactory.CreateProperty("X-Real-IP", this.ctx.GetRemoteIp()));
         }
     }

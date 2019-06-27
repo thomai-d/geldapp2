@@ -6,6 +6,14 @@ namespace Abstrakt.AspNetCore.Extensions
 {
     public static class HttpContextExtensions
     {
+        public static string GetHttpHeader(this HttpContext ctx, string key)
+        {
+            if (ctx.Request.Headers.TryGetValue(key, out var value))
+                return value;
+            else
+                return string.Empty;
+        }
+
         public static string GetRemoteIp(this HttpContext ctx)
         {
             if (ctx.Request.Headers.TryGetValue("X-Real-IP", out var realIp))
