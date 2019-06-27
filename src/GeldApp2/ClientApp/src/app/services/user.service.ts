@@ -66,7 +66,6 @@ export class UserService {
       const response = await this.api.login(username, password);
 
       const tokenString = response.token;
-      localStorage.setItem('authToken', tokenString);
       localStorage.setItem('refreshToken', response.refreshToken);
       this.setToken(tokenString);
 
@@ -111,7 +110,8 @@ export class UserService {
   private setToken(tokenString: string) {
     const token = this.jwt.decodeToken(tokenString);
     const expiry = this.jwt.getTokenExpirationDate(tokenString);
-    this.log.debug('services.user', `Got token for ${token.username}, valid until ${expiry}`);
+    localStorage.setItem('authToken', tokenString);
+    this.log.info('services.user', `Got token for ${token.username}, valid until ${expiry}`);
     if (!token.username || !token.accounts || !token.userid) {
       throw new Error(`Invalid token: ${JSON.stringify(token)}`);
     }
