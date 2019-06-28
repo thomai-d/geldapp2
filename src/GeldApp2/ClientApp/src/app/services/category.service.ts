@@ -31,6 +31,7 @@ export class CategoryService {
   static readonly CategoryCacheKeyFn = (accountName: string) => `services.category.${accountName}`;
 
   initialize() {
+    this.log.debug('services.category', 'Initializing category service');
     const s1 = this.userService.currentUser$.subscribe(async u => this.refresh(u));
     this.subscriptions.push(s1);
   }
@@ -86,13 +87,14 @@ export class CategoryService {
   /* Private methods */
 
   private async refresh(user: IUserWithAccounts) {
+    this.log.debug('services.category', 'User changed. Refreshing categories...');
     if (!user) {
       this.categoriesByAccount = {};
       this.fetchCategoryPromises = {};
       return;
     }
 
-    const fetchAll = user.accounts.map(accountName => this.refreshAccount(user, accountName));
+    const fetchAll = user.accounts.map(accountName => this.refreshCategories(accountName));
     await Promise.all(fetchAll);
   }
 
@@ -101,14 +103,17 @@ export class CategoryService {
     delete this.categoriesByAccount[accountName];
     delete this.fetchCategoryPromises[accountName];
     this.cache.clear(cacheKey);
-    this.refreshAccount(this.userService.currentUser, accountName);
+    this.refreshCategories(accountName);
   }
 
-  private async refreshAccount(user: IUserWithAccounts, accountName: string) {
+  private async refreshCategories(accountName: string) {
     try {
+      this.log.debug('services.category', `Refreshing categories for ${accountName}...`);
       const categories = await this.fetchCategories(accountName);
       this.categoriesByAccount[accountName] = CacheableItem.live(categories);
-    } catch { }
+    } catch (ex) {
+      this.log.errorWithException('services.category', `Fetching categories for ${accountName} failed`, ex);
+    }
   }
 
   private async fetchCategories(accountName: string): Promise<Category[]> {
@@ -119,10 +124,13 @@ export class CategoryService {
       this.fetchCategoryPromises[accountName] = runningFetch;
     }
 
-    const categories = await runningFetch;
-    this.cache.set(cacheKey, categories);
-    this.fetchCategoryPromises[accountName] = undefined;
-    return categories;
+    try {
+      const categories = await runningFetch;
+      this.cache.set(cacheKey, categories);
+      return categories;
+    } finally {
+      this.fetchCategoryPromises[accountName] = undefined;
+    }
   }
 }
 
@@ -138,6 +146,7 @@ export class CategoryService {
 // Generic error while fetching categories return an error item.
 // Invalidate will clear the cache and immediately refresh the account.
 // Fetch request while already fetching will reuse the old promise.
+// Failed fetch request will dispose the promise.
 // Deleting category will invoke the api and invalidate the cache.
 // Deleting subcategory will invoke the api and invalidate the cache.
 // Adding category will invoke the api and invalidate the cache.

@@ -20,6 +20,11 @@ export class Logger {
     console.error(`${path}: ${message}`);
   }
 
+  public errorWithException(path: string, message: string, ex: any) {
+// tslint:disable-next-line: no-console
+    console.error(`${path}: ${message}\nException:\n${JSON.stringify(ex)}`);
+  }
+
   public warn(path: string, message: string) {
 // tslint:disable-next-line: no-console
     console.warn(`${path}: ${message}`);
@@ -31,7 +36,8 @@ export class Logger {
   }
 
   public debug(path: string, message: string) {
+    // TODO DEBUG
 // tslint:disable-next-line: no-console
-    console.debug(`${path}: ${message}`);
+    console.info(`${path}: ${message}`);
   }
 }
