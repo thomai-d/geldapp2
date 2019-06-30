@@ -9,7 +9,7 @@ using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GeldApp2.Application.Commands.User
+namespace GeldApp2.Application.Commands.Users
 {
     /// <summary>
     /// Command that checks the login and returns a JWT token.

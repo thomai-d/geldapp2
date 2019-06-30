@@ -1,4 +1,5 @@
-﻿using GeldApp2.Application.Queries.Users;
+﻿using GeldApp2.Application.Commands.Users;
+using GeldApp2.Application.Queries.Users;
 using GeldApp2.Database;
 using GeldApp2.Database.ViewModels;
 using MediatR;
@@ -31,6 +32,13 @@ namespace GeldApp2.Controllers
         public async Task<UserSummary[]> GetAccountSummaryMonth()
         {
             return await this.mediator.Send(new GetUserSummaryQuery());
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpPost, Route("/api/users")]
+        public async Task AddUser([FromBody]CreateUserCommand cmd)
+        {
+            await this.mediator.Send(cmd);
         }
     }
 }

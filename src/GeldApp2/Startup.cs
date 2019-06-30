@@ -1,6 +1,6 @@
 using Abstrakt.AspNetCore;
 using Autofac;
-using GeldApp2.Application.Commands.User;
+using GeldApp2.Application.Commands.Users;
 using GeldApp2.Application.Logging;
 using GeldApp2.Application.Services;
 using GeldApp2.Configuration;

@@ -176,4 +176,15 @@ export class GeldAppApi {
     const url = `${this.url}api/users`;
     return <UserSummary[]>(await this.http.get(url).toPromise());
   }
+
+  // 200: Success
+  // 422: User error (with message in body)
+  // 403: Forbidden
+  // 401: Unauthorized
+  // 500: Server error
+  async createUser(name: string, password: string, createDefaultAccount: boolean): Promise<void> {
+    this.log.debug('api', `Creating user ${name}`);
+    const url = `${this.url}api/users`;
+    await this.http.post(url, { name, password, createDefaultAccount}).toPromise();
+  }
 }

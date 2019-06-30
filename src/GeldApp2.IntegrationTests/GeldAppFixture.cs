@@ -1,5 +1,5 @@
 using FluentAssertions;
-using GeldApp2.Application.Commands.User;
+using GeldApp2.Application.Commands.Users;
 using GeldApp2.Database;
 using GeldApp2.Database.Abstractions;
 using GeldApp2.Database.ViewModels;
@@ -143,18 +143,17 @@ namespace GeldApp2.IntegrationTests
 
             var sharedAccount = new Account("Shared", cat2);
 
-            var hans = new User("Hans", "abc123") { Id = 1, RefreshToken = "refreshMe" };
+            var hans = new User("Hans", "abc123") { RefreshToken = "refreshMe" };
             hans.AddAccount(new Account("Hans", cat1));
             hans.AddAccount(sharedAccount);
             db.Users.Add(hans);
 
-            var petra = new User("Petra", "abc123") { Id = 2 };
+            var petra = new User("Petra", "abc123");
             petra.AddAccount(new Account("Petra", cat3));
             petra.AddAccount(sharedAccount);
             db.Users.Add(petra);
 
             var admin = User.CreateAdmin("Admin", "abc123");
-            admin.Id = 3;
             db.Users.Add(admin);
 
             db.SaveChanges();

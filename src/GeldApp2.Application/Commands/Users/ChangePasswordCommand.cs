@@ -9,7 +9,7 @@ using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GeldApp2.Application.Commands.User
+namespace GeldApp2.Application.Commands.Users
 {
     public class ChangePasswordCommand : IRequest<bool>
     {

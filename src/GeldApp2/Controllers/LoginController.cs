@@ -1,4 +1,4 @@
-﻿using GeldApp2.Application.Commands.User;
+﻿using GeldApp2.Application.Commands.Users;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

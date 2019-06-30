@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using GeldApp2.Application.Commands.User;
+using GeldApp2.Application.Commands.Users;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -88,10 +88,20 @@ namespace GeldApp2.IntegrationTests
         [InlineData("/api/account/Hans/categories")]
         [InlineData("/api/account/Hans/expenses")]
         [InlineData("/api/account/Hans/charts/compare-category")]
+        [InlineData("/api/users")]
         public async Task PostControllersAreNotAccessibleWithoutAuthentication(string url)
         {
             var result = await this.fixture.Client.PostAsync(url, new StringContent(""));
             result.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        }
+
+        [Theory]
+        [InlineData("/api/users")]
+        public async Task PostControllersAreNotAccessibleWithoutAdminRights(string url)
+        {
+            await this.fixture.Login("Hans");
+            var result = await this.fixture.Client.PostAsync(url, new StringContent(""));
+            result.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
 
         [Theory]
