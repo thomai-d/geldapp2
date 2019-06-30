@@ -39,6 +39,7 @@ namespace GeldApp2.Application.Queries.Chart
                     FROM Expenses e
                     WHERE e.AccountId = {request.Account.Id} 
                     AND YEAR(e.Date) = {request.Year} AND MONTH(e.Date) = {request.Month}
+                    AND e.Amount < 0
                     GROUP BY e.Category");
         }
     }
