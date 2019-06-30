@@ -3,8 +3,10 @@ using GeldApp2.Application.Commands;
 using GeldApp2.Application.Commands.Expense;
 using GeldApp2.Database;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -48,7 +50,7 @@ namespace GeldApp2.IntegrationTests
             resp.StatusCode.Should().Be(HttpStatusCode.OK);
         }
 
-        public static void IsForbidden(this HttpResponseMessage resp)
+        public static void ShouldBeForbidden(this HttpResponseMessage resp)
         {
             resp.StatusCode.Should().Be(HttpStatusCode.Forbidden);
         }
@@ -66,6 +68,15 @@ namespace GeldApp2.IntegrationTests
         public static void ShouldClientFail(this HttpResponseMessage resp)
         {
             resp.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
+        }
+
+        public static async Task<JwtSecurityToken> GetJwtTokenAsync(this HttpResponseMessage resp)
+        {
+            var json = await resp.Content.ReadAsStringAsync();
+            var tokenStr = JObject.Parse(json)["token"].ToString();
+            var tokenService = new JwtSecurityTokenHandler();
+            var token = tokenService.ReadJwtToken(tokenStr);
+            return token;
         }
     }
 }

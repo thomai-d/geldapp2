@@ -153,6 +153,10 @@ namespace GeldApp2.IntegrationTests
             petra.AddAccount(sharedAccount);
             db.Users.Add(petra);
 
+            var admin = User.CreateAdmin("Admin", "abc123");
+            admin.Id = 3;
+            db.Users.Add(admin);
+
             db.SaveChanges();
         }
     }

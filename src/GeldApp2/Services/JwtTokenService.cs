@@ -46,6 +46,9 @@ namespace GeldApp2.Services
                 new Claim("username", user.Name)
             };
 
+            if (user.IsAdmin)
+                claims.Add(new Claim(ClaimTypes.Role, "admin"));
+
             claims.AddRange(accountNames.Select(n => new Claim("accounts", n)));
 
             var tokenOptions = new JwtSecurityToken(

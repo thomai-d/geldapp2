@@ -1,9 +1,13 @@
 ﻿using FluentAssertions;
 using GeldApp2.Application.Commands.User;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Net.Http;
 using System.Security.Authentication;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -13,29 +17,40 @@ namespace GeldApp2.IntegrationTests
     /// This integration test ensures that every single API endpoint is protected by the authentication mechanism.
     /// If you add endpoints, also ensure that a test is added here.
     /// </summary>
-    public class AuthorizationTests : IClassFixture<GeldAppFixture>
+    public class AuthenticationTests : IClassFixture<GeldAppFixture>
     {
         private readonly GeldAppFixture fixture;
 
-        public AuthorizationTests(GeldAppFixture fixture)
+        public AuthenticationTests(GeldAppFixture fixture)
         {
             this.fixture = fixture;
         }
 
         [Theory]
-        [InlineData("Hans", "abc123", true)]
-        [InlineData("hans", "abc123", false)]
-        [InlineData("Hans", "Abc123", false)]
-        [InlineData("Hans", "abc123!", false)]
-        [InlineData("Hans' AND 1 = 1;--", "abc123", false)]
-        [InlineData("abc123", "abc123", false)]
-        [InlineData("", "", false)]
-        [InlineData("§(%$=)/$&!", "=(%=)§%()§/&=", false)]
-        public async Task LoginTest(string user, string pass, bool authorize)
+        [InlineData("Admin", "abc123", true, true)]
+        [InlineData("Hans", "abc123", true, false)]
+        [InlineData("hans", "abc123", false, false)]
+        [InlineData("Hans", "Abc123", false, false)]
+        [InlineData("Hans", "abc123!", false, false)]
+        [InlineData("Hans' AND 1 = 1;--", "abc123", false, false)]
+        [InlineData("abc123", "abc123", false, false)]
+        [InlineData("", "", false, false)]
+        [InlineData("§(%$=)/$&!", "=(%=)§%()§/&=", false, false)]
+        public async Task LoginTest(string user, string pass, bool authorize, bool isAdmin)
         {
             var auth = new LoginCommand { Username = user, Password = pass };
             var resp = await this.fixture.Client.PostAsync("/api/auth/login", auth.AsContent());
             resp.StatusCode.Should().Be(authorize ? HttpStatusCode.OK : HttpStatusCode.Unauthorized);
+
+            if (authorize)
+            {
+                var token = await resp.GetJwtTokenAsync();
+
+                if (isAdmin)
+                    token.Claims.Should().Contain(t => t.Type == ClaimTypes.Role && t.Value == "admin");
+                else
+                    token.Claims.Should().NotContain(t => t.Type == ClaimTypes.Role && t.Value == "admin");
+            }
         }
 
         [Fact]
@@ -61,6 +76,7 @@ namespace GeldApp2.IntegrationTests
         [InlineData("/api/account/Hans/expenses")]
         [InlineData("/api/account/Hans/expense/1")]
         [InlineData("/api/auth/refresh")]
+        [InlineData("/api/users")]
         public async Task GetControllersAreNotAccessibleWithoutAuthentication(string url)
         {
             var result = await this.fixture.Client.GetAsync(url);
@@ -136,7 +152,7 @@ namespace GeldApp2.IntegrationTests
                 
                 // Invalid old password.
                 result = await fixture.Client.PostAsync("/api/auth/changePassword", wrongOldPwd.AsContent());
-                result.IsForbidden();
+                result.ShouldBeForbidden();
                 
                 // New password too short.
                 result = await fixture.Client.PostAsync("/api/auth/changePassword", passTooShort.AsContent());

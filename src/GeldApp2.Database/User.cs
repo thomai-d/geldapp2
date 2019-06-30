@@ -10,6 +10,11 @@ namespace GeldApp2.Database
 {
     public class User
     {
+        public static User CreateAdmin(string user, string pass)
+        {
+            return new User(user, pass) { IsAdmin = true };
+        }
+
         public User()
         {
         }
@@ -33,6 +38,8 @@ namespace GeldApp2.Database
         public DateTimeOffset LastPasswordChange { get; set; }
 
         public ICollection<UserAccount> UserAccounts { get; set; } = new List<UserAccount>();
+
+        public bool IsAdmin { get; private set; }
 
         public void SetPassword(string password)
         {
