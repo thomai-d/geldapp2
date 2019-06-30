@@ -45,10 +45,12 @@ export class CacheStateComponent implements OnChanges {
     switch (this.item.state) {
       case ItemState.Online:
         this.show = false;
+        this.isError = false;
         break;
       case ItemState.Cached:
         this.show = true;
         this.text = `Letzte Aktualisierung: ${this.item.getTimestamp().toLocaleString()}`;
+        this.isError = false;
         break;
       case ItemState.Offline:
         this.show = true;

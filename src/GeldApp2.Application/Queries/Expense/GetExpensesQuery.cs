@@ -1,4 +1,5 @@
 ﻿using GeldApp2.Application.Commands;
+using GeldApp2.Application.Exceptions;
 using GeldApp2.Application.Queries.Expense.Filter;
 using GeldApp2.Database;
 using GeldApp2.Database.ViewModels;
@@ -63,15 +64,22 @@ namespace GeldApp2.Application.Queries
             {
                 if (request.SearchText.StartsWith("!"))
                 {
-                    var filter = ExpenseFilterString.Parse(request.SearchText.Substring(1));
-                    if (filter.Month.HasValue)
-                        query = query.Where(ex => ex.Date.Month == filter.Month.Value);
-                    if (filter.Year.HasValue)
-                        query = query.Where(ex => ex.Date.Year == filter.Year.Value);
-                    if (!string.IsNullOrEmpty(filter.Category))
-                        query = query.Where(ex => ex.Category.Equals(filter.Category));
-                    if (!string.IsNullOrEmpty(filter.Subcategory))
-                        query = query.Where(ex => ex.Subcategory.Equals(filter.Subcategory));
+                    try
+                    {
+                        var filter = ExpenseFilterString.Parse(request.SearchText.Substring(1));
+                        if (filter.Month.HasValue)
+                            query = query.Where(ex => ex.Date.Month == filter.Month.Value);
+                        if (filter.Year.HasValue)
+                            query = query.Where(ex => ex.Date.Year == filter.Year.Value);
+                        if (!string.IsNullOrEmpty(filter.Category))
+                            query = query.Where(ex => ex.Category.Equals(filter.Category));
+                        if (!string.IsNullOrEmpty(filter.Subcategory))
+                            query = query.Where(ex => ex.Subcategory.Equals(filter.Subcategory));
+                    }
+                    catch (FilterParseException ex)
+                    {
+                        throw new UserException(ex.Message, ex);
+                    }
                 }
                 else
                 {

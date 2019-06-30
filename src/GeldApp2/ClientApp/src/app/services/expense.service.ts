@@ -260,7 +260,6 @@ export class ExpenseService {
       });
     } catch (ex) {
 
-
       if (isOfflineException(ex)) {
         const cachedItem = this.getCachedExpenses(accountName);
         subj.next({
@@ -270,7 +269,7 @@ export class ExpenseService {
         return;
       }
 
-      if (ex.status === 400 && ex.error && ex.error.errorType === 'FilterParseException') {
+      if (ex.status === 422) {
         subj.next({
           expenses: CacheableItem.error('Ungültiger Filterausdruck'),
           queued: this.getQueuedNewExpenses(accountName)

@@ -46,7 +46,7 @@ export class CacheableItem<T> {
 
   static error<T>(error: string): CacheableItem<T> {
     const i = new CacheableItem<T>();
-    i.state = ItemState.Offline;
+    i.state = ItemState.Error;
     i.timestamp = Date.now();
     i.error = error;
     return i;
