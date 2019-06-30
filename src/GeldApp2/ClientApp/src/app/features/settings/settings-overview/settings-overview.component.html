@@ -18,6 +18,11 @@
         <mat-icon>info</mat-icon>
         <span>Infos</span>
       </mat-list-item>
+      
+      <mat-list-item routerLink="user" class="cursor-hand" *ngIf="adminGuard.canActivate(null, null)">
+        <mat-icon>face</mat-icon>
+        <span>Benutzer</span>
+      </mat-list-item>
 
     </mat-nav-list>
 

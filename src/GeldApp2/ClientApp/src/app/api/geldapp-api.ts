@@ -7,6 +7,7 @@ import { AccountSummary } from './model/account-summary';
 import { Category } from './model/category';
 import { ChangePassword, CompareCategoryChartOptions } from './model/request-types';
 import { ExpenseRevenueLineChartsDto } from './model/response-types';
+import { UserSummary } from './model/user-summary';
 
 /// Encapsulates every single call to the web-API.
 @Injectable({ providedIn: 'root' })
@@ -168,5 +169,11 @@ export class GeldAppApi {
     const url = `${this.url}api/app/version`;
     const result = <any>await this.http.get(url).toPromise();
     return <string>(result.version);
+  }
+
+  async getUserSummary(): Promise<UserSummary[]> {
+    this.log.debug('api', 'Getting user summary...');
+    const url = `${this.url}api/users`;
+    return <UserSummary[]>(await this.http.get(url).toPromise());
   }
 }

@@ -1,0 +1,31 @@
+<mat-card *ngIf="errorText">
+  <div class="error">
+    {{errorText}}
+  </div>
+</mat-card>
+
+<table class="mat-table" *ngIf="!errorText">
+  <tbody class="rowgroup">
+    <tr>
+      <th>Rolle</th>
+      <th>Name</th>
+      <th>Letzter Login</th>
+      <th>Accounts</th>
+    </tr>
+
+    <tr class="mat-row" *ngFor="let user of users">
+      <td class="mat-cell">
+        <mat-icon *ngIf="!user.isAdmin">face</mat-icon>
+        <mat-icon *ngIf="user.isAdmin">grade</mat-icon>
+      </td>
+      
+      <td class="mat-cell">{{user.name}}</td>
+      <td class="mat-cell">{{user.lastLogin | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+      <td class="mat-cell">
+        <ul>
+          <li *ngFor="let account of user.accounts">{{account}}</li>
+        </ul>
+      </td>
+      </tr>
+  </tbody>
+</table>

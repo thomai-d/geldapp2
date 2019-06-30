@@ -7,6 +7,8 @@ import { CategoryListComponent } from './category-list/category-list.component';
 import { SubcategoryListComponent } from './subcategory-list/subcategory-list.component';
 import { SettingsOverviewComponent } from './settings-overview/settings-overview.component';
 import { InfoComponent } from './info/info.component';
+import { UserSettingsComponent } from './user-settings/user-settings.component';
+import { AdminGuard } from 'src/app/guards/admin.guard';
 
 const routes: Routes = [
   {
@@ -37,6 +39,12 @@ const routes: Routes = [
     data: { title: 'Passwort ändern' },
     component: ChangePasswordComponent,
     canActivate: [AuthGuard]
+  },
+  {
+    path: 'settings/user',
+    data: { title: 'Benutzer' },
+    component: UserSettingsComponent,
+    canActivate: [AdminGuard]
   },
 ];
 

@@ -5,6 +5,7 @@ import { Injectable } from '@angular/core';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { isOfflineException } from '../helpers/exception-helper';
 import { Router } from '@angular/router';
+import { UserSummary } from '../api/model/user-summary';
 
 export interface IGeldAppToken {
   username: string;
@@ -15,6 +16,7 @@ export interface IGeldAppToken {
 export interface IUserWithAccounts {
   userName: string;
   accounts: string[];
+  isAdmin: boolean;
 }
 
 export enum LoginResult {
@@ -116,9 +118,16 @@ export class UserService {
       throw new Error(`Invalid token: ${JSON.stringify(token)}`);
     }
 
+    const roleStr = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
+    const isAdmin = token[roleStr] === 'admin';
+
     const accounts = Array.isArray(token.accounts) ? token.accounts : [token.accounts];
-    this.currentUser = { userName: token.username, accounts: accounts };
+    this.currentUser = { userName: token.username, accounts: accounts, isAdmin: isAdmin };
     this.currentUserSubject.next(this.currentUser);
     this.tokenExpirySubject.next(expiry);
+  }
+
+  getUserSummary(): Promise<UserSummary[]> {
+    return this.api.getUserSummary();
   }
 }

@@ -8,6 +8,7 @@ import { GlobalImportsModule } from 'src/app/global-imports.module';
 import { SettingsOverviewComponent } from './settings-overview/settings-overview.component';
 import { InfoComponent } from './info/info.component';
 import { ChangePasswordComponent } from './change-password/change-password.component';
+import { UserSettingsComponent } from './user-settings/user-settings.component';
 
 @NgModule({
   declarations: [
@@ -17,6 +18,7 @@ import { ChangePasswordComponent } from './change-password/change-password.compo
     SettingsOverviewComponent,
     InfoComponent,
     ChangePasswordComponent,
+    UserSettingsComponent,
   ],
   imports: [
     GlobalImportsModule,
