@@ -3,7 +3,10 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatButtonModule, MatCheckboxModule, MatToolbarModule, MatDialogModule, MatIconModule, MatSlideToggleModule, MatBadgeModule, MatProgressBarModule, MatExpansionModule, MatMenuModule } from '@angular/material';
+import { MatButtonModule, MatCheckboxModule, MatToolbarModule, MatDialogModule,
+        MatIconModule, MatSlideToggleModule, MatBadgeModule, MatProgressBarModule,
+        MatExpansionModule, MatMenuModule } from '@angular/material';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
@@ -33,6 +36,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     MatDatepickerModule,
     MatNativeDateModule,
     MatToolbarModule,
+    MatTooltipModule,
     FlexLayoutModule,
     MatListModule,
     MatProgressSpinnerModule,
@@ -61,6 +65,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     MatDatepickerModule,
     MatNativeDateModule,
     MatToolbarModule,
+    MatTooltipModule,
     FlexLayoutModule,
     MatListModule,
     MatProgressSpinnerModule,

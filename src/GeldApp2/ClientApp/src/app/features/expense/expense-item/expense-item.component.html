@@ -1,4 +1,5 @@
-<mat-card class="cursor-hand mb-1" (click)="onClick()">
+<mat-card class="cursor-hand mb-1" (click)="onClick()"
+          [matTooltip]="expense.details">
   <mat-card-content fxLayout="rows" fxLayoutAlign="start center">
     
     <div class="icon" [ngSwitch]="expense.type">
