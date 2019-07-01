@@ -39,7 +39,7 @@ namespace GeldApp2.Services
             {
                 this.log.LogInformation(
                     Events.UsageStatistics,
-                    "There are currently {expenseCount} expenses for {username}",
+                    "There are currently {ExpenseCount} expenses for {Username}",
                     epa.Value,
                     epa.Key);
             }
