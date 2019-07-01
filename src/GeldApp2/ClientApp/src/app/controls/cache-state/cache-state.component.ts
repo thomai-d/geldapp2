@@ -46,6 +46,7 @@ export class CacheStateComponent implements OnChanges {
       case ItemState.Online:
         this.show = false;
         this.isError = false;
+        this.text = '';
         break;
       case ItemState.Cached:
         this.show = true;

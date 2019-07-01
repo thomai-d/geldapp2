@@ -20,12 +20,12 @@
     <mat-slide-toggle class="toggle-future" color="primary" [formControl]="includeFuture">Künftige Einträge anzeigen</mat-slide-toggle>
 
   </mat-card>
+  
+  <!-- State -->
+  <app-cache-state [item]="expenseData"></app-cache-state>
 
   <!-- Add -->
   <button class="add-button-bigscreen" fxFlexAlign="end" fxHide.lt-lg="true" mat-raised-button color="primary" [routerLink]="'./new'">Neuer Eintrag</button>
-
-  <!-- State -->
-  <app-cache-state [item]="expenseData"></app-cache-state>
 
   <!-- Local queued expenses -->
   <div *ngIf="queuedItems && queuedItems.length">
