@@ -40,6 +40,11 @@
     </div>
   </div>
 
+  <!-- Empty expenses -->
+  <mat-card *ngIf="items!=null && items.length==0">
+    <span class="info">Keine Einträge.</span>
+  </mat-card>
+
   <!-- Commited expenses -->
   <div *ngIf="items">
     <div *ngFor="let item of items">

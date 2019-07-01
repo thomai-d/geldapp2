@@ -88,3 +88,8 @@ div.stacked .small {
  .right {
    text-align: right;
  }
+
+ .info {
+   font-style: italic;
+   color: lightgray;
+ }

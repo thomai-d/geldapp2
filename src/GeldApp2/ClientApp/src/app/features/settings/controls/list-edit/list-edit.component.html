@@ -2,6 +2,10 @@
 
   <div fxFlex="0 1 500px" fxLayout="column">
 
+    <mat-card *ngIf="items.length==0">
+      <span class="info">Keine Einträge.</span>
+    </mat-card>
+
     <!-- Links -->
     <mat-nav-list *ngIf="!isInDeleteMode && routerLinkFunc">
       <mat-list-item [routerLink]="routerLinkFunc(item)" *ngFor="let item of items" class="cursor-hand">
