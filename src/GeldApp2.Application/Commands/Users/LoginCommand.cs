@@ -44,7 +44,7 @@ namespace GeldApp2.Application.Commands.Users
             if (string.IsNullOrEmpty(cmd.Username) || string.IsNullOrEmpty(cmd.Password))
                 throw new AuthenticationException("Empty user or password");
 
-            var tempUser = new Database.User(cmd.Username, cmd.Password);
+            var tempUser = new User(cmd.Username, cmd.Password);
             var user = this.db.Users.SingleOrDefault(u => u.Name == tempUser.Name
                                                        && u.Password == tempUser.Password);
             if (user == null)

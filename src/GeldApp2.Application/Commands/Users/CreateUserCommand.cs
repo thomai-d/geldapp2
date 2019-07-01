@@ -55,6 +55,7 @@ namespace GeldApp2.Application.Commands.Users
             var users = this.db.Users.ToList();
 
             var user = new User(request.Name, request.Password);
+            user.GenerateRefreshToken();
 
             if (request.CreateDefaultAccount)
                 user.UserAccounts.Add(new UserAccount(user, new Account(request.Name)));

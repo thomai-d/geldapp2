@@ -41,20 +41,11 @@ namespace GeldApp2.Application.Commands.Users
 
             var user = await this.db.Users.SingleAsync(u => u.Id == request.User.Id);
             user.SetPassword(request.NewPassword);
-            user.RefreshToken = this.GenerateRefreshToken();
+            user.GenerateRefreshToken();
             await this.db.SaveChangesAsync();
 
             return true;
         }
 
-        private string GenerateRefreshToken()
-        {
-            using (var provider = new RNGCryptoServiceProvider())
-            {
-                var bytes = new byte[16];
-                provider.GetBytes(bytes);
-                return new Guid(bytes).ToString();
-            }
-        }
     }
 }

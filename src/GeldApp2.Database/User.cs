@@ -70,6 +70,16 @@ namespace GeldApp2.Database
             this.UserAccounts.Add(new UserAccount(this, account));
         }
 
+        public void GenerateRefreshToken()
+        {
+            using (var provider = new RNGCryptoServiceProvider())
+            {
+                var bytes = new byte[16];
+                provider.GetBytes(bytes);
+                this.RefreshToken = new Guid(bytes).ToString();
+            }
+        }
+
         private string Hash(string input)
         {
             using (var csp = SHA256.Create())
