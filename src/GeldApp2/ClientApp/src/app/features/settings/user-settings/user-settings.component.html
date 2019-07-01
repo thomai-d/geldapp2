@@ -1,31 +1,60 @@
-<mat-card *ngIf="errorText">
-  <div class="error">
-    {{errorText}}
-  </div>
-</mat-card>
+<div fxLayout="column" fxLayoutAlign="start start">
+  <mat-card *ngIf="errorText">
+    <div class="error">
+      {{errorText}}
+    </div>
+  </mat-card>
 
-<table class="mat-table" *ngIf="!errorText">
-  <tbody class="rowgroup">
-    <tr>
-      <th>Rolle</th>
-      <th>Name</th>
-      <th>Letzter Login</th>
-      <th>Accounts</th>
-    </tr>
-
-    <tr class="mat-row" *ngFor="let user of users">
-      <td class="mat-cell">
-        <mat-icon *ngIf="!user.isAdmin">face</mat-icon>
-        <mat-icon *ngIf="user.isAdmin">grade</mat-icon>
-      </td>
-      
-      <td class="mat-cell">{{user.name}}</td>
-      <td class="mat-cell">{{user.lastLogin | date:'yyyy-MM-dd HH:mm:ss'}}</td>
-      <td class="mat-cell">
-        <ul>
-          <li *ngFor="let account of user.accounts">{{account}}</li>
-        </ul>
-      </td>
+  <table class="mat-table" *ngIf="!errorText">
+    <tbody class="rowgroup">
+      <tr>
+        <th>Rolle</th>
+        <th>Name</th>
+        <th>Letzter Login</th>
+        <th>Accounts</th>
       </tr>
-  </tbody>
-</table>
+
+      <tr class="mat-row" *ngFor="let user of users">
+        <td class="mat-cell">
+          <mat-icon *ngIf="!user.isAdmin">face</mat-icon>
+          <mat-icon *ngIf="user.isAdmin">grade</mat-icon>
+        </td>
+
+        <td class="mat-cell">{{user.name}}</td>
+        <td class="mat-cell">{{user.lastLogin | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+        <td class="mat-cell">
+          <ul>
+            <li *ngFor="let account of user.accounts">{{account}}</li>
+          </ul>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Add user section -->
+  <mat-card class="mt-1">
+    <mat-card-title>Benutzer hinzufügen</mat-card-title>
+    <form (ngSubmit)="onAddUser()">
+
+      <div fxLayout="column" fxLayoutAlign="start start">
+        <!-- Username -->
+        <mat-form-field>
+          <mat-label>Name</mat-label>
+          <input matNativeControl type="text" name="username" [(ngModel)]="new_username">
+        </mat-form-field>
+
+        <!-- Password -->
+        <mat-form-field>
+          <mat-label>Vorläufiges Passwort</mat-label>
+          <input matNativeControl type="text" name="password" [(ngModel)]="new_password">
+        </mat-form-field>
+
+        <mat-checkbox [(ngModel)]="new_account" name="create_account">Standardaccount anlegen</mat-checkbox>
+        <br />
+
+        <button mat-raised-button color="primary">Anlegen</button>
+
+      </div>
+    </form>
+  </mat-card>
+</div>

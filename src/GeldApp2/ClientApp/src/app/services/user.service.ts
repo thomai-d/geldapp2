@@ -130,4 +130,8 @@ export class UserService {
   getUserSummary(): Promise<UserSummary[]> {
     return this.api.getUserSummary();
   }
+
+  async addUser(name: string, password: string, createDefaultAccount: boolean): Promise<void> {
+    await this.api.createUser(name, password, createDefaultAccount);
+  }
 }
