@@ -29,14 +29,13 @@ namespace GeldApp2.Database
 
         /* Queries */
 
-        public DbQuery<AccountSummary> AccountSummaries { get; private set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Custom queries.
             modelBuilder.Query<LabelledChartItem>();
             modelBuilder.Query<MonthlyDataItem>();
             modelBuilder.Query<KeyValueItem>();
+            modelBuilder.Query<AccountSummary>();
 
             modelBuilder.Entity<UserAccount>()
                 .HasKey(u => new { u.UserId, u.AccountId });

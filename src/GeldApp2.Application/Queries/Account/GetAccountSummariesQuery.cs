@@ -1,4 +1,5 @@
 ﻿using GeldApp2.Database;
+using GeldApp2.Database.Abstractions;
 using GeldApp2.Database.ViewModels;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -26,29 +27,25 @@ namespace GeldApp2.Application.Queries.Account
 
     public class GetAccountSummariesQueryHandler : IRequestHandler<GetAccountSummariesQuery, AccountSummary[]>
     {
-        private readonly GeldAppContext db;
+        private readonly ISqlQuery sql;
 
-        public GetAccountSummariesQueryHandler(GeldAppContext db)
+        public GetAccountSummariesQueryHandler(ISqlQuery sql)
         {
-            this.db = db;
+            this.sql = sql;
         }
 
         public async Task<AccountSummary[]> Handle(GetAccountSummariesQuery request, CancellationToken cancellationToken)
         {
-            var accounts = this.db.AccountSummaries
-                .AsNoTracking()
-                .FromSql($@"SELECT a.Name as AccountName,
-                                (SELECT IFNULL(SUM(e.Amount), 0)
-                                 FROM Expenses e
-                                 WHERE e.AccountId = a.Id
-                                   AND MONTH(e.Date) = {request.Month}
-                                   AND YEAR(e.Date) = {request.Year}
-                                   AND e.Amount < 0) AS TotalExpenses
-                           FROM UserAccount ua
-                           JOIN Accounts a ON a.Id = ua.AccountId
-                           WHERE ua.UserId = {request.User.Id}");
-
-            return await accounts.ToArrayAsync();
+            return await this.sql.Query<AccountSummary>($@"SELECT a.Name as AccountName,
+                                                                    (SELECT IFNULL(SUM(e.Amount), 0)
+                                                                     FROM Expenses e
+                                                                     WHERE e.AccountId = a.Id
+                                                                       AND MONTH(e.Date) = {request.Month}
+                                                                       AND YEAR(e.Date) = {request.Year}
+                                                                       AND e.Amount < 0) AS TotalExpenses
+                                                               FROM UserAccount ua
+                                                               JOIN Accounts a ON a.Id = ua.AccountId
+                                                               WHERE ua.UserId = {request.User.Id}");
         }
     }
 }
