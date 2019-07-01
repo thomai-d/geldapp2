@@ -22,5 +22,9 @@ namespace GeldApp2.Application.Logging
         public const int Login = 1006;
 
         public const int RefreshToken = 1007;
+
+        public const int PerformanceStatistics = 1008;
+
+        public const int UsageStatistics = 1009;
     }
 }

@@ -48,11 +48,12 @@ namespace GeldApp2
             // Configure stuff.
             services.Configure<IpBlockerSettings>(Configuration.GetSection("IpBlockerSettings"));
 
-            services.AddHostedService<PerformanceMonitorService>();
+            services.AddHostedService<StatisticsService>();
 
             services.AddScoped<ISqlQuery, SqlQuery>();
             services.AddScoped<IJwtTokenService, JwtTokenService>();
             services.AddScoped<IDatabaseMigrator, DatabaseMigrator>();
+            services.AddScoped<IUsageStatisticsLogger, UsageStatisticsLogger>();
             services.AddSingleton<IIpBlockerService, IpBlockerService>();
 
             this.InjectPreloadedObjects(services);

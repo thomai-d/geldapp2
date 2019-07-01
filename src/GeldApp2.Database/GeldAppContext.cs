@@ -14,6 +14,8 @@ namespace GeldApp2.Database
             : base(opt)
         {
         }
+        
+        /* Tables */
 
         public DbSet<User> Users { get; set; }
 
@@ -25,6 +27,8 @@ namespace GeldApp2.Database
 
         public DbSet<Expense> Expenses { get; set; }
 
+        /* Queries */
+
         public DbQuery<AccountSummary> AccountSummaries { get; private set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -32,6 +36,7 @@ namespace GeldApp2.Database
             // Custom queries.
             modelBuilder.Query<LabelledChartItem>();
             modelBuilder.Query<MonthlyDataItem>();
+            modelBuilder.Query<KeyValueItem>();
 
             modelBuilder.Entity<UserAccount>()
                 .HasKey(u => new { u.UserId, u.AccountId });
