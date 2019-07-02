@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using GeldApp2.Application.Logging;
 using GeldApp2.Database;
 using GeldApp2.Extensions;
 using MediatR;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace GeldApp2.Application.Commands.Expense
 {
-    public class CreateExpenseCommand : AccountRelatedRequest<bool>
+    public class CreateExpenseCommand : AccountRelatedRequest<bool>, ILoggable
     {
         public decimal Amount { get; set; }
 
@@ -25,6 +26,14 @@ namespace GeldApp2.Application.Commands.Expense
         public ExpenseType Type { get; set; }
 
         public string UserName { get; set; }
+
+        public virtual void EmitLog(LogEventDelegate log, bool success)
+        {
+            if (success)
+                log(Events.ExpenseCommands, "{Account} created a new {ExpenseType}", this.AccountName, this.Type.ToString());
+            else
+                log(Events.ExpenseCommands, "Creating a new {ExpenseType} for {Account} failed", this.Type.ToString(), this.AccountName);
+        }
     }
 
     public class CreateExpenseCommandHandler : IRequestHandler<CreateExpenseCommand, bool>

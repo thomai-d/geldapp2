@@ -1,4 +1,5 @@
-﻿using GeldApp2.Database;
+﻿using GeldApp2.Application.Logging;
+using GeldApp2.Database;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -7,9 +8,17 @@ using System.Threading.Tasks;
 
 namespace GeldApp2.Application.Commands
 {
-    public class DeleteExpenseCommand : AccountRelatedRequest<bool>
+    public class DeleteExpenseCommand : AccountRelatedRequest<bool>, ILoggable
     {
         public long Id { get; set; }
+
+        public void EmitLog(LogEventDelegate log, bool success)
+        {
+            if (success)
+                log(Events.CategoryCommands, "{Account} deleted expense {ExpenseId}", this.AccountName, this.Id);
+            else
+                log(Events.CategoryCommands, "Deleting expense {ExpenseId} for {Account} failed", this.Id, this.AccountName);
+        }
     }
 
     public class DeleteExpenseCommandHandler : IRequestHandler<DeleteExpenseCommand, bool>

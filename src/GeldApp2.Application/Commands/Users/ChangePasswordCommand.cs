@@ -1,5 +1,6 @@
 ﻿using GeldApp2.Application.Commands;
 using GeldApp2.Application.Exceptions;
+using GeldApp2.Application.Logging;
 using GeldApp2.Database;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -11,13 +12,21 @@ using System.Threading.Tasks;
 
 namespace GeldApp2.Application.Commands.Users
 {
-    public class ChangePasswordCommand : IRequest<bool>
+    public class ChangePasswordCommand : IRequest<bool>, ILoggable
     {
         public Database.User User { get; set; }
 
         public string OldPassword { get; set; }
 
         public string NewPassword { get; set; }
+
+        public void EmitLog(LogEventDelegate log, bool success)
+        {
+            if (success)
+                log(Events.UserCommands, "{Username} changed the password", this.User.Name);
+            else
+                log(Events.UserCommands, "Changing the password for {Username} failed", this.User.Name);
+        }
     }
 
     public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordCommand, bool>

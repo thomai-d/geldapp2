@@ -14,7 +14,7 @@ namespace GeldApp2.Application.Commands.Users
     /// <summary>
     /// Command returns a fresh jwt token.
     /// </summary>
-    public class RefreshTokenCommand : IRequest<string>
+    public class RefreshTokenCommand : IRequest<string>, ILoggable
     {
         public RefreshTokenCommand(Database.User user, string refreshToken)
         {
@@ -25,18 +25,24 @@ namespace GeldApp2.Application.Commands.Users
         public Database.User User { get; }
 
         public string RefreshToken { get; set; }
+
+        public void EmitLog(LogEventDelegate log, bool success)
+        {
+            if (success)
+                log(Events.RefreshTokenCommand, "{Username} refreshed the token", User.Name);
+            else
+                log(Events.RefreshTokenCommand, "Token refresh for {Username} failed", this.User.Name);
+        }
     }
 
     public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, string>
     {
         private readonly GeldAppContext db;
         private readonly IJwtTokenService jwtTokenService;
-        private readonly ILogger<RefreshTokenCommandHandler> log;
 
-        public RefreshTokenCommandHandler(GeldAppContext db, IJwtTokenService jwtTokenService, ILogger<RefreshTokenCommandHandler> log)
+        public RefreshTokenCommandHandler(GeldAppContext db, IJwtTokenService jwtTokenService)
         {
             this.db = db;
-            this.log = log;
             this.jwtTokenService = jwtTokenService;
         }
         public async Task<string> Handle(RefreshTokenCommand cmd, CancellationToken cancellationToken)
@@ -54,7 +60,6 @@ namespace GeldApp2.Application.Commands.Users
 
             var token = await this.jwtTokenService.GetTokenStringAsync(user);
             var tokenPart = $"{token.Substring(0, 6)}...{token.Substring(token.Length - 6)}";
-            this.log.LogInformation(Events.RefreshToken, "{user} refreshed token. Token = {token}", user.Name, tokenPart);
             return token;
         }
     }

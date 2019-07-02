@@ -1,7 +1,9 @@
 ﻿using GeldApp2.Application.Exceptions;
+using GeldApp2.Application.Logging;
 using GeldApp2.Database;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Threading;
@@ -9,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace GeldApp2.Application.Commands.Category
 {
-    public class CreateCategoryCommand : AccountRelatedRequest<bool>
+    public class CreateCategoryCommand : AccountRelatedRequest<bool>, ILoggable
     {
         public CreateCategoryCommand()
         {
@@ -22,6 +24,14 @@ namespace GeldApp2.Application.Commands.Category
         }
 
         public string CategoryName { get; set; }
+
+        public void EmitLog(LogEventDelegate log, bool success)
+        {
+            if (success)
+                log(Events.CategoryCommands, "{Account} created a new category {Category}", this.AccountName, this.CategoryName);
+            else
+                log(Events.CategoryCommands, "Creating a new category {Category} for {Account} failed", this.CategoryName, this.AccountName);
+        }
     }
 
     public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, bool>

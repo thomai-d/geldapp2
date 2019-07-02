@@ -1,5 +1,6 @@
 ﻿using GeldApp2.Application.Commands;
 using GeldApp2.Application.Exceptions;
+using GeldApp2.Application.Logging;
 using GeldApp2.Database;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -12,9 +13,17 @@ using System.Threading.Tasks;
 
 namespace GeldApp2.Application.Commands.Category
 {
-    public class DeleteCategoryCommand : AccountRelatedRequest<bool>
+    public class DeleteCategoryCommand : AccountRelatedRequest<bool>, ILoggable
     {
         public string CategoryName { get; set; }
+
+        public void EmitLog(LogEventDelegate log, bool success)
+        {
+            if (success)
+                log(Events.CategoryCommands, "{Account} deleted the category {Category}", this.AccountName, this.CategoryName);
+            else
+                log(Events.CategoryCommands, "Deleting the category {Category} for {Account} failed", this.CategoryName, this.AccountName);
+        }
     }
 
     public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand, bool>

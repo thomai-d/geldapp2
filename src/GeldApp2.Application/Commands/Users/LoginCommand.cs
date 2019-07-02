@@ -14,10 +14,18 @@ namespace GeldApp2.Application.Commands.Users
     /// <summary>
     /// Command that checks the login and returns a JWT token.
     /// </summary>
-    public class LoginCommand : IRequest<LoginResult>
+    public class LoginCommand : IRequest<LoginResult>, ILoggable
     {
         public string Username { get; set; }
         public string Password { get; set; }
+
+        public void EmitLog(LogEventDelegate log, bool success)
+        {
+            if (success)
+                log(Events.LoginCommand, "{Username} logged in", Username);
+            else
+                log(Events.LoginCommand, "Login for {Username} failed", this.Username);
+        }
     }
 
     public class LoginResult
@@ -31,13 +39,11 @@ namespace GeldApp2.Application.Commands.Users
     {
         private readonly GeldAppContext db;
         private readonly IJwtTokenService jwtTokenService;
-        private readonly ILogger<LoginCommandHandler> log;
 
-        public LoginCommandHandler(GeldAppContext db, IJwtTokenService jwtTokenService, ILogger<LoginCommandHandler> log)
+        public LoginCommandHandler(GeldAppContext db, IJwtTokenService jwtTokenService)
         {
             this.db = db;
             this.jwtTokenService = jwtTokenService;
-            this.log = log;
         }
         public async Task<LoginResult> Handle(LoginCommand cmd, CancellationToken cancellationToken)
         {
@@ -55,7 +61,6 @@ namespace GeldApp2.Application.Commands.Users
 
             var token = await this.jwtTokenService.GetTokenStringAsync(user);
             var tokenPart = $"{token.Substring(0, 6)}...{token.Substring(token.Length - 6)}";
-            this.log.LogInformation(Events.Login, "{user} logged in. Token = {token}", user.Name, tokenPart);
             return new LoginResult
             {
                 Token = token,

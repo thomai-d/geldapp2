@@ -1,4 +1,5 @@
-﻿using GeldApp2.Database;
+﻿using GeldApp2.Application.Logging;
+using GeldApp2.Database;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace GeldApp2.Application.Commands
 {
-    public class DeleteSubcategoryCommand : AccountRelatedRequest<bool>
+    public class DeleteSubcategoryCommand : AccountRelatedRequest<bool>, ILoggable
     {
         public DeleteSubcategoryCommand()
         {
@@ -23,6 +24,14 @@ namespace GeldApp2.Application.Commands
         public string CategoryName { get; set; }
 
         public string SubcategoryName { get; set; }
+
+        public void EmitLog(LogEventDelegate log, bool success)
+        {
+            if (success)
+                log(Events.CategoryCommands, "{Account} deleted the subcategory {Category}/{Subcategory}", this.AccountName, this.CategoryName, this.SubcategoryName);
+            else
+                log(Events.CategoryCommands, "Deleting the subcategory {Category}/{Subcategory} for {Account} failed", this.CategoryName, this.SubcategoryName, this.AccountName);
+        }
     }
 
     public class DeleteSubcategoryCommandHandler : IRequestHandler<DeleteSubcategoryCommand, bool>

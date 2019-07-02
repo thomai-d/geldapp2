@@ -1,4 +1,5 @@
 ﻿using GeldApp2.Application.Exceptions;
+using GeldApp2.Application.Logging;
 using GeldApp2.Database;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace GeldApp2.Application.Commands.Category
 {
-    public class CreateSubcategoryCommand : AccountRelatedRequest<bool>
+    public class CreateSubcategoryCommand : AccountRelatedRequest<bool>, ILoggable
     {
         public CreateSubcategoryCommand()
         {
@@ -25,6 +26,14 @@ namespace GeldApp2.Application.Commands.Category
         public string CategoryName { get; set; }
 
         public string SubcategoryName { get; set; }
+
+        public void EmitLog(LogEventDelegate log, bool success)
+        {
+            if (success)
+                log(Events.CategoryCommands, "{Account} created a new subcategory {Category}/{Subcategory}", this.AccountName, this.CategoryName, this.SubcategoryName);
+            else
+                log(Events.CategoryCommands, "Creating a new subcategory {Category}/{Subcategory} for {Account} failed", this.CategoryName, this.SubcategoryName, this.AccountName);
+        }
     }
 
     public class CreateSubcategoryCommandHandler : IRequestHandler<CreateSubcategoryCommand, bool>

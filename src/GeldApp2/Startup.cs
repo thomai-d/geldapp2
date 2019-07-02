@@ -55,6 +55,7 @@ namespace GeldApp2
             services.AddScoped<IDatabaseMigrator, DatabaseMigrator>();
             services.AddScoped<IUsageStatisticsLogger, UsageStatisticsLogger>();
             services.AddSingleton<IIpBlockerService, IpBlockerService>();
+            services.AddSingleton<ILogContextEnricher, LogContextEnricher>();
 
             this.InjectPreloadedObjects(services);
 
