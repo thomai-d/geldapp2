@@ -33,9 +33,9 @@ export class UserSettingsComponent implements OnInit {
       this.new_password = '';
     } catch (ex) {
       if (ex.status && ex.error) {
-        this.dialogService.showError(`Es ist ein Fehler aufgetreten (Code ${ex.status}):<br/>${ex.error}`);
+        this.dialogService.showError(`Es ist ein Fehler aufgetreten (Code ${ex.status}):\n${ex.error}`);
       } else {
-        this.dialogService.showError(`Es ist ein Fehler aufgetreten:<br/>${JSON.stringify(ex)}`);
+        this.dialogService.showError(`Es ist ein Fehler aufgetreten:\n${JSON.stringify(ex)}`);
       }
       return;
     }

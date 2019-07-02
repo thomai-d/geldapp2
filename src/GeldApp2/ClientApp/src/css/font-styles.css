@@ -93,3 +93,7 @@ div.stacked .small {
    font-style: italic;
    color: lightgray;
  }
+
+ .wrap-text {
+   white-space:pre-wrap;
+ }

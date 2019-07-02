@@ -25,9 +25,9 @@ export class UpdateService {
       const currentVersion = environment.version;
       const version = await this.api.getAppVersion();
       if (version !== currentVersion) {
-        await this.dialogService.showError(`Es ist eine neuere Programmversion verfügbar!<br>` +
-          `Lokal: ${currentVersion}<br>` +
-          `Neue Version: ${version}<br><br>` +
+        await this.dialogService.showError(`Es ist eine neuere Programmversion verfügbar!\n` +
+          `Lokal: ${currentVersion}\n` +
+          `Neue Version: ${version}\n\n` +
           `Es wird jetzt eine Aktualisierung durchgeführt.`);
         window.location.reload(true);
       }
