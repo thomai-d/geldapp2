@@ -41,7 +41,7 @@
   </div>
 
   <!-- Empty expenses -->
-  <mat-card *ngIf="items!=null && items.length==0">
+  <mat-card *ngIf="items!=null && items.length==0 && !isLoading">
     <span class="info">Keine Einträge.</span>
   </mat-card>
 
