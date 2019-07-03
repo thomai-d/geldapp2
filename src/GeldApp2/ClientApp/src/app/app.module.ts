@@ -27,6 +27,16 @@ import { TextInputDialogComponent } from './dialogs/text-input-dialog/text-input
 import { ToolbarComponent } from './controls/toolbar/toolbar.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { UnauthorizedInterceptor } from './guards/unauthorized.interceptor';
+import { HAMMER_GESTURE_CONFIG, HammerGestureConfig } from '@angular/platform-browser';
+
+export class MyHammerConfig extends HammerGestureConfig {
+    buildHammer(element: HTMLElement) {
+      const mc = new Hammer(element, {
+        touchAction: 'pan-y'
+      });
+      return mc;
+    }
+}
 
 export function tokenGetter() {
   return localStorage.getItem('authToken');
@@ -67,7 +77,8 @@ export function tokenGetter() {
   entryComponents: [ ErrorDialogComponent, ProgressDialogComponent, DecisionDialogComponent, TextInputDialogComponent ],
   providers: [
     { provide: LOCALE_ID, useValue: 'de' },
-    { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true },
+    { provide: HAMMER_GESTURE_CONFIG, useClass: MyHammerConfig }
   ],
   bootstrap: [AppComponent]
 })
