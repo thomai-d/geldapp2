@@ -222,12 +222,13 @@ export class ExpenseService {
       let fetchAgain = true;
 
       while (fetchAgain) {
-        fetchAgain = this.syncTasks.length > 0;
+        const pendingTasks = this.syncTasks.length;
+        fetchAgain = pendingTasks > 0;
 
         await this.fetchExpensesFromServer(subj, accountName, searchText, limit, includeFuture);
 
         if (fetchAgain) {
-          this.log.debug('services.expense', `There were ${this.syncTasks.length} pending task(s). Fetching again.`);
+          this.log.debug('services.expense', `There were ${pendingTasks} pending task(s). Fetching again.`);
         }
 
         if (this.syncTasks.length > 0) {

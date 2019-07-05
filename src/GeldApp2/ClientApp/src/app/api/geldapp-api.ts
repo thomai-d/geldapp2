@@ -81,7 +81,7 @@ export class GeldAppApi {
 
   async getExpenses(accountName: string, searchText: string, limit: number = 50, offset: number = 0, includeFuture: boolean)
   : Promise<Expense[]> {
-    this.log.debug('api', `getting expenses...`);
+    this.log.debug('api', `getting expenses... (q = ${searchText}, f = ${includeFuture})`);
     accountName = encodeURIComponent(accountName);
 
     let params = new HttpParams()

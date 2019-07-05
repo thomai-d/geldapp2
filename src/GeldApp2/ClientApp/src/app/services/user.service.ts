@@ -83,6 +83,7 @@ export class UserService {
   logout() {
     this.log.debug('services.user', 'Logout');
     localStorage.clear();
+    sessionStorage.clear();
     this.currentUser = null;
     this.currentUserSubject.next(undefined);
     this.router.navigate(['/login'], { queryParams: { redirect: '/' }});
