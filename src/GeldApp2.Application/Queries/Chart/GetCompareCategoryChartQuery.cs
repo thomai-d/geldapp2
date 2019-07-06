@@ -58,7 +58,7 @@ namespace GeldApp2.Application.Queries.Chart
 
                     var itemsNoGap = items.WithoutGaps().Select(DateChartItem.From);
                     var chart = new DateLineChartDto($"{filter.CategoryName} - {filter.SubcategoryName}", itemsNoGap);
-                    chart.Tag = new { Category = filter.CategoryName, Subcategory = filter.SubcategoryName };
+                    chart.Tag = $"category:'{filter.CategoryName}' and subcategory:'{filter.SubcategoryName}' and amount<0";
                     if (chart.Items.Any(i => i.Y != 0))
                         result.Expense.Add(chart);
                 }
@@ -76,7 +76,7 @@ namespace GeldApp2.Application.Queries.Chart
 
                     var itemsNoGap = items.WithoutGaps().Select(DateChartItem.From);
                     var chart = new DateLineChartDto($"{filter.CategoryName}", itemsNoGap);
-                    chart.Tag = new { Category = filter.CategoryName };
+                    chart.Tag = $"category:'{filter.CategoryName}' and amount<0";
                     if (chart.Items.Any(i => i.Y != 0))
                         result.Expense.Add(chart);
                 }
@@ -95,7 +95,7 @@ namespace GeldApp2.Application.Queries.Chart
 
                     var itemsNoGap = items.WithoutGaps().Select(DateChartItem.From);
                     var chart = new DateLineChartDto($"{filter.CategoryName} - {filter.SubcategoryName}", itemsNoGap);
-                    chart.Tag = new { Category = filter.CategoryName, Subcategory = filter.SubcategoryName };
+                    chart.Tag = $"category:'{filter.CategoryName}' and subcategory:'{filter.SubcategoryName}' and amount>0";
                     if (chart.Items.Any(i => i.Y != 0))
                         result.Revenue.Add(chart);
                 }
@@ -113,7 +113,7 @@ namespace GeldApp2.Application.Queries.Chart
 
                     var itemsNoGap = items.WithoutGaps().Select(DateChartItem.From);
                     var chart = new DateLineChartDto($"{filter.CategoryName}", itemsNoGap);
-                    chart.Tag = new { Category = filter.CategoryName };
+                    chart.Tag = $"category:'{filter.CategoryName}' and amount>0";
                     if (chart.Items.Any(i => i.Y != 0))
                         result.Revenue.Add(chart);
                 }

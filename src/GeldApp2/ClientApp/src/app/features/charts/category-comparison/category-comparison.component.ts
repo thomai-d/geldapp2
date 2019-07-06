@@ -105,7 +105,7 @@ export class CategoryComparisonComponent
     const chartOptions = this.buildChartOptions(monthInterval, title);
     for (const line of data) {
       chartOptions.data.push({
-        click: this.onDataPointClick.bind(this, line.tag),
+        click: this.onDataPointClick.bind(this, line.tag), /* The line's tag contains a filter expression */
         type: 'line',
         showInLegend: true,
         name: line.name,
@@ -162,15 +162,8 @@ export class CategoryComparisonComponent
 
   }
 
-  private onDataPointClick(tag: any, e: any) {
-    let queryStr: string;
-    if (tag.subcategory) {
-      queryStr = `!year:${e.dataPoint.x.getFullYear()} and month:${e.dataPoint.x.getMonth() + 1}`
-                    + ` and category:'${tag.category}' and subcategory:'${tag.subcategory}'`;
-    } else {
-      queryStr = `!year:${e.dataPoint.x.getFullYear()} and month:${e.dataPoint.x.getMonth() + 1}`
-                    + ` and category:'${tag.category}'`;
-    }
+  private onDataPointClick(filterStr: any, e: any) {
+    const queryStr = `!year:${e.dataPoint.x.getFullYear()} and month:${e.dataPoint.x.getMonth() + 1} and ${filterStr}`;
     this.router.navigate(['/expenses', this.accountName], { queryParams: { q: queryStr, future: true }});
   }
 }

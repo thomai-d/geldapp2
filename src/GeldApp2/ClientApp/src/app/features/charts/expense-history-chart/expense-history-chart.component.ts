@@ -71,7 +71,7 @@ export class ExpenseHistoryChartComponent extends ChartBaseComponent {
         dockInsidePlotArea: false,
       },
       data: [{
-        click: this.onDataPointClick.bind(this),
+        click: this.onDataPointClick.bind(this, true),
         type: 'line',
         showInLegend: true,
         name: 'Ausgaben',
@@ -82,7 +82,7 @@ export class ExpenseHistoryChartComponent extends ChartBaseComponent {
         dataPoints: expenseData
       },
       {
-        click: this.onDataPointClick.bind(this),
+        click: this.onDataPointClick.bind(this, false),
         type: 'line',
         showInLegend: true,
         name: 'Einnahmen',
@@ -99,8 +99,9 @@ export class ExpenseHistoryChartComponent extends ChartBaseComponent {
     }
   }
 
-  private onDataPointClick(e: any) {
-    const queryStr = `!year:${e.dataPoint.x.getFullYear()} and month:${e.dataPoint.x.getMonth() + 1}`;
+  private onDataPointClick(isExpense: boolean, e: any) {
+    const amountFilter = isExpense ? 'amount<0' : 'amount>0';
+    const queryStr = `!year:${e.dataPoint.x.getFullYear()} and month:${e.dataPoint.x.getMonth() + 1} and ${amountFilter}`;
     this.router.navigate(['/expenses', this.accountName], { queryParams: { q: queryStr, future: true }});
   }
 }
