@@ -33,6 +33,10 @@ namespace GeldApp2.Application.UnitTests.Queries.Expense
         [InlineData("!category:Essen", new long[] { 1, 2 }, "Kategorie")]
         [InlineData("!category:'Essen'", new long[] { 1, 2 }, "Kategorie")]
         [InlineData("!subcategory:'Pidser'", new long[] { 1 }, "Unterkategorie")]
+        [InlineData("!amount<-3", new long[] { 4 }, "Amount")]
+        [InlineData("!amount>9999", new long[] { 7 }, "Amount 2")]
+        [InlineData("!amount=1000,12", new long[] { 6 }, "Amount 3")]
+        [InlineData("!type:regularRevenue", new long[] { 6 }, "Type")]
         public async Task SearchTest(string searchText, long[] resultIds, string reason, bool includeFuture = true)
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("DE");
@@ -63,7 +67,7 @@ namespace GeldApp2.Application.UnitTests.Queries.Expense
             db.Expenses.Add(new Database.Expense { Id = 3, Date = D(1, 1, 2), Account = account1, Amount = -3, Category = "Auto", Subcategory = "Öl", Details = "Racing" });
             db.Expenses.Add(new Database.Expense { Id = 4, Date = D(2, 2, 1), Account = account1, Amount = -4, Category = "Auto", Subcategory = "Benzin", Details = "E10" });
             db.Expenses.Add(new Database.Expense { Id = 5, Date = D(2, 2, 1), Account = account1, Amount = 100, Category = "Gehalt", Subcategory = "Arbyte", Details = "", Type = ExpenseType.Revenue });
-            db.Expenses.Add(new Database.Expense { Id = 6, Date = D(2, 1, 1), Account = account1, Amount = 1000.12M, Category = "Gehalt", Subcategory = "Schwarzgeld", Details = "", Type = ExpenseType.Revenue });
+            db.Expenses.Add(new Database.Expense { Id = 6, Date = D(2, 1, 1), Account = account1, Amount = 1000.12M, Category = "Gehalt", Subcategory = "Schwarzgeld", Details = "", Type = ExpenseType.RegularRevenue });
             db.Expenses.Add(new Database.Expense { Id = 7, Date = D(3000, 1, 1), Account = account1, Amount = 1000000, Category = "Zocken", Subcategory = "Lotto", Details = "", Type = ExpenseType.Revenue });
             db.Expenses.Add(new Database.Expense { Id = 8, Date = D(1, 1, 1), Account = account2, Amount = -1, Category = "Essen", Subcategory = "Pidser", Details = "Calzone" });
             db.SaveChanges();

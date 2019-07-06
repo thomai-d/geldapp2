@@ -75,6 +75,23 @@ namespace GeldApp2.Application.Queries
                             query = query.Where(ex => ex.Category.Equals(filter.Category));
                         if (!string.IsNullOrEmpty(filter.Subcategory))
                             query = query.Where(ex => ex.Subcategory.Equals(filter.Subcategory));
+                        if (filter.Type.HasValue)
+                            query = query.Where(ex => ex.Type == filter.Type.Value);
+                        if (filter.AmountCompareType.HasValue)
+                        {
+                            switch (filter.AmountCompareType.Value)
+                            {
+                                case AmountCompareType.Equals:
+                                    query = query.Where(ex => ex.Amount == filter.Amount);
+                                    break;
+                                case AmountCompareType.GreaterThan:
+                                    query = query.Where(ex => ex.Amount > filter.Amount);
+                                    break;
+                                case AmountCompareType.LowerThan:
+                                    query = query.Where(ex => ex.Amount < filter.Amount);
+                                    break;
+                            }
+                        }
                     }
                     catch (FilterParseException ex)
                     {

@@ -1,4 +1,5 @@
 ﻿using GeldApp2.Application.Exceptions;
+using GeldApp2.Database;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,6 +18,7 @@ namespace GeldApp2.Application.Queries.Expense.Filter
         private static readonly Regex StringValueRx = new Regex(@"^:(?<VALUE>.*?)($|\s)");
         private static readonly Regex QuotedStringValueRx = new Regex(@"^:'(?<VALUE>.*?)'($|\s)");
         private static readonly Regex AndRx = new Regex(@"^\s*and\s+");
+        private static readonly Regex CompareAmountRx = new Regex(@"^(?<COMPARE>[><=]{1})(?<VALUE>-?\d{1,5}(,?)\d{0,2})($|\s)");
 
         private string remainder;
 
@@ -30,6 +32,10 @@ namespace GeldApp2.Application.Queries.Expense.Filter
         public int? Year { get; private set; }
         public string Category { get; private set; }
         public string Subcategory { get; private set; }
+        public ExpenseType? Type { get; private set; }
+
+        public AmountCompareType? AmountCompareType { get; private set; }
+        public decimal Amount { get; set; }
 
         public static ExpenseFilterString Parse(string filterString)
         {
@@ -82,6 +88,25 @@ namespace GeldApp2.Application.Queries.Expense.Filter
                     this.Subcategory = substr;
                     break;
 
+                case "type":
+                    if (this.Type.HasValue)
+                        throw new FilterParseException($"'{this.Type}': Duplicate value for type");
+                    this.ParseString(out var typeStr);
+
+                    if (!Enum.TryParse<ExpenseType>(typeStr, ignoreCase: true, out var type))
+                        throw new FilterParseException($"{typeStr}: Invalid expense type");
+
+                    this.Type = type;
+                    break;
+
+                case "amount":
+                    if (this.AmountCompareType.HasValue)
+                        throw new FilterParseException($"'{this.AmountCompareType}': Duplicate value for amount");
+                    this.ParseAmountCompare(out var compType, out var amt);
+                    this.AmountCompareType = compType;
+                    this.Amount = amt;
+                    break;
+
                 default:
                     throw new FilterParseException($"'{this.FilterString}': Unknown start token: '{startToken}'");
             }
@@ -104,6 +129,26 @@ namespace GeldApp2.Application.Queries.Expense.Filter
 
             this.remainder = this.remainder.Substring(m.Length);
             value = m.Groups["VALUE"].Value;
+        }
+
+        private void ParseAmountCompare(out AmountCompareType compareType, out decimal amount)
+        {
+            var m = CompareAmountRx.Match(this.remainder);
+            if (!m.Success)
+              throw new FilterParseException($"'{this.FilterString}': Invalid amount-value: '{this.remainder}'");
+
+            this.remainder = this.remainder.Substring(m.Length);
+
+            switch (m.Groups["COMPARE"].Value)
+            {
+                case ">": compareType = Filter.AmountCompareType.GreaterThan; break;
+                case "<": compareType = Filter.AmountCompareType.LowerThan; break;
+                case "=": compareType = Filter.AmountCompareType.Equals; break;
+                default: throw new FilterParseException($"'{this.FilterString}': Invalid amount compare sign.");
+            }
+
+            if (!decimal.TryParse(m.Groups["VALUE"].Value, out amount))
+              throw new FilterParseException($"'{this.FilterString}': Non parseable amount-value: '{m.Groups["VALUE"].Value}'");
         }
 
         private void ParseInt(out int value)
