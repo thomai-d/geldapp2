@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace GeldApp2.Application.Commands.Category
 {
-    public class CreateCategoryCommand : AccountRelatedRequest<bool>, ILoggable
+    public class CreateCategoryCommand : AccountRelatedRequest<bool>, ILoggable, ICommand
     {
         public CreateCategoryCommand()
         {

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace GeldApp2.Application.Commands.Expense
 {
-    public class UpdateExpenseCommand : CreateExpenseCommand, ILoggable
+    public class UpdateExpenseCommand : CreateExpenseCommand, ILoggable, ICommand
     {
         public long Id { get; set; }
 

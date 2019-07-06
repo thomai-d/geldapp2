@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace GeldApp2.Application.Commands.Expense
 {
-    public class CreateExpenseCommand : AccountRelatedRequest<bool>, ILoggable
+    public class CreateExpenseCommand : AccountRelatedRequest<bool>, ILoggable, ICommand
     {
         public decimal Amount { get; set; }
 

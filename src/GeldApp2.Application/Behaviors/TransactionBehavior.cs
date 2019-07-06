@@ -1,4 +1,5 @@
-﻿using GeldApp2.Database;
+﻿using GeldApp2.Application.Commands;
+using GeldApp2.Database;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 namespace GeldApp2.Application.Behaviors
 {
     public class TransactionBehavior<TReq, TResp> : IPipelineBehavior<TReq, TResp>
+            where TReq: ICommand
     {
         private readonly GeldAppContext db;
         private readonly ILogger<TransactionBehavior<TReq, TResp>> log;

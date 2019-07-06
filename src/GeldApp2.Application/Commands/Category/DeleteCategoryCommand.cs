@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace GeldApp2.Application.Commands.Category
 {
-    public class DeleteCategoryCommand : AccountRelatedRequest<bool>, ILoggable
+    public class DeleteCategoryCommand : AccountRelatedRequest<bool>, ILoggable, ICommand
     {
         public string CategoryName { get; set; }
 

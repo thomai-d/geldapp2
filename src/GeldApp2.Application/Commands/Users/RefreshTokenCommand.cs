@@ -14,7 +14,7 @@ namespace GeldApp2.Application.Commands.Users
     /// <summary>
     /// Command returns a fresh jwt token.
     /// </summary>
-    public class RefreshTokenCommand : IRequest<string>, ILoggable
+    public class RefreshTokenCommand : IRequest<string>, ILoggable, ICommand
     {
         public RefreshTokenCommand(Database.User user, string refreshToken)
         {

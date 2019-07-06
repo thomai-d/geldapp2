@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace GeldApp2.Application.Commands.Category
 {
-    public class CreateSubcategoryCommand : AccountRelatedRequest<bool>, ILoggable
+    public class CreateSubcategoryCommand : AccountRelatedRequest<bool>, ILoggable, ICommand
     {
         public CreateSubcategoryCommand()
         {

@@ -2,7 +2,6 @@
 using GeldApp2.Application.Services;
 using GeldApp2.Database;
 using MediatR;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 using System.Security.Authentication;
@@ -14,7 +13,7 @@ namespace GeldApp2.Application.Commands.Users
     /// <summary>
     /// Command that checks the login and returns a JWT token.
     /// </summary>
-    public class LoginCommand : IRequest<LoginResult>, ILoggable
+    public class LoginCommand : IRequest<LoginResult>, ILoggable, ICommand
     {
         public string Username { get; set; }
         public string Password { get; set; }

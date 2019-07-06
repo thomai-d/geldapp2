@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace GeldApp2.Application.Commands.Users
 {
-    public class ChangePasswordCommand : IRequest<bool>, ILoggable
+    public class ChangePasswordCommand : IRequest<bool>, ILoggable, ICommand
     {
         public Database.User User { get; set; }
 

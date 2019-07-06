@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace GeldApp2.Application.Commands
 {
-    public class DeleteExpenseCommand : AccountRelatedRequest<bool>, ILoggable
+    public class DeleteExpenseCommand : AccountRelatedRequest<bool>, ILoggable, ICommand
     {
         public long Id { get; set; }
 

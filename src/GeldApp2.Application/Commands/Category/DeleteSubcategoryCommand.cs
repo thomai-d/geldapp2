@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace GeldApp2.Application.Commands
 {
-    public class DeleteSubcategoryCommand : AccountRelatedRequest<bool>, ILoggable
+    public class DeleteSubcategoryCommand : AccountRelatedRequest<bool>, ILoggable, ICommand
     {
         public DeleteSubcategoryCommand()
         {

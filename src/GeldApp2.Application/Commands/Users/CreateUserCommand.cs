@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace GeldApp2.Application.Commands.Users
 {
-    public class CreateUserCommand : IRequest<bool>, ILoggable
+    public class CreateUserCommand : IRequest<bool>, ILoggable, ICommand
     {
         private CreateUserCommand()
         {
