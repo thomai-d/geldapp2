@@ -35,6 +35,7 @@ namespace GeldApp2.Application.UnitTests.Queries.Expense.Filter
         [InlineData("year:2000 and month:10 and subcategory:ok", 10, 2000, null, "ok")]
         public void ValidFiltersTest(string filterString, int? expMonth, int? expYear, string expCategory, string expSubcat, ExpenseType? expectedType = null, AmountCompareType? amountComp = null, decimal amount = 0)
         {
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("DE");
             var result = ExpenseFilterString.Parse(filterString);
             result.Month.Should().Be(expMonth);
             result.Year.Should().Be(expYear);
