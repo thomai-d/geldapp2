@@ -1,8 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { MediaObserver } from '@angular/flex-layout';
 import { Subscription } from 'rxjs';
 import { UserService } from 'src/app/services/user.service';
+import { HttpClient } from '@angular/common/http';
+import { LinkHelper } from 'src/app/helpers/link-helper';
+import { AccountService } from 'src/app/services/account.service';
 
 @Component({
   selector: 'app-info',
@@ -13,9 +16,11 @@ export class InfoComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription[] = [];
 
+  @ViewChild('downloadCsv') private downloadButton: ElementRef;
+
   constructor(
     private mediaObserver: MediaObserver,
-    public userService: UserService
+    public userService: UserService,
   ) { }
 
   version: string;
@@ -23,6 +28,7 @@ export class InfoComponent implements OnInit, OnDestroy {
   media: string;
   mediaQuery: string;
   token: string;
+  accountNames: string[];
 
   ngOnInit() {
     const token = localStorage.getItem('authToken');
@@ -37,6 +43,12 @@ export class InfoComponent implements OnInit, OnDestroy {
           this.media = m ? m[0].mqAlias : '?';
           this.mediaQuery = m ? m[0].mediaQuery : '?';
         }));
+
+    this.accountNames = this.userService.currentUser.accounts;
+  }
+
+  public async downloadTsv(accountName: string): Promise<void> {
+    LinkHelper.openDownloadLink(`/api/account/${accountName}/export/tsv`);
   }
 
   ngOnDestroy() {

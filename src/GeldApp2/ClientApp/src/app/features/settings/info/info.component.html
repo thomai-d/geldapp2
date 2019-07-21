@@ -1,5 +1,6 @@
-<div fxLayout="row">
-  <mat-card fxFlex="0 1 auto">
+<div fxLayout="column">
+  <mat-card>
+    <mat-card-header>App-Informationen</mat-card-header>
     <mat-card-content>
       <table class="mat-table">
         <tbody class="rowgroup">
@@ -39,6 +40,13 @@
           </tr>
         </tbody>
       </table>
+    </mat-card-content>
+  </mat-card>
+  <mat-card>
+    <mat-card-header>TSV-Export</mat-card-header>
+    <mat-card-content>
+      <button *ngFor="let accountName of accountNames"
+              mat-stroked-button (click)="downloadTsv(accountName)">{{accountName}}</button>
     </mat-card-content>
   </mat-card>
 </div>

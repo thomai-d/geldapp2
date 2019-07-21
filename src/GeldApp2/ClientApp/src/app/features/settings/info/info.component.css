@@ -1,0 +1,13 @@
+mat-card {
+  margin: 8px;
+}
+
+/* Fix header margin */
+.mat-card-header {
+  display: block;
+  margin-bottom: 8px;
+}
+
+button {
+  margin-right: 8px;
+}

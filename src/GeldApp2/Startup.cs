@@ -111,6 +111,7 @@ namespace GeldApp2
 
             app.UseMiddleware<IpBlockerMiddleware>();
             app.UseMiddleware<LoggingMiddleware>();
+            app.UseMiddleware<CookieAuthenticationMiddleware>();
 
             app.UseAuthentication();
 

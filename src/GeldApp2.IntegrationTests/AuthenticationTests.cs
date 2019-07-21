@@ -75,6 +75,7 @@ namespace GeldApp2.IntegrationTests
         [InlineData("/api/account/Hans/charts/revenue-history")]
         [InlineData("/api/account/Hans/expenses")]
         [InlineData("/api/account/Hans/expense/1")]
+        [InlineData("/api/account/Hans/export/tsv")]
         [InlineData("/api/auth/refresh")]
         [InlineData("/api/users")]
         public async Task GetControllersAreNotAccessibleWithoutAuthentication(string url)
