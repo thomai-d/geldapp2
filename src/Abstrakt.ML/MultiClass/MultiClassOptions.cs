@@ -14,14 +14,16 @@ namespace Abstrakt.ML.MultiClass
 
         public MultiClassOptions<TInput> WithLabel<TResult>(Expression<Func<TInput, TResult>> labelSelector)
         {
-            this.LabelName = GetMemberName(labelSelector);
-            return this;
+            var clone = (MultiClassOptions<TInput>)this.MemberwiseClone();
+            clone.LabelName = GetMemberName(labelSelector);
+            return clone;
         }
 
         public MultiClassOptions<TInput> WithFeatures<TResult>(params Expression<Func<TInput, TResult>>[] featureSelectors)
         {
-            this.FeatureColumnNames = featureSelectors.Select(GetMemberName).ToArray();
-            return this;
+            var clone = (MultiClassOptions<TInput>)this.MemberwiseClone();
+            clone.FeatureColumnNames = featureSelectors.Select(GetMemberName).ToArray();
+            return clone;
         }
     }
 }

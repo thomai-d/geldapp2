@@ -70,6 +70,7 @@ namespace GeldApp2.IntegrationTests
         [Theory]
         [InlineData("/api/accounts/summary/month")]
         [InlineData("/api/account/Hans/categories")]
+        [InlineData("/api/account/Hans/categories/predict")]
         [InlineData("/api/account/Hans/charts/month-by-category")]
         [InlineData("/api/account/Hans/charts/expense-history")]
         [InlineData("/api/account/Hans/charts/revenue-history")]

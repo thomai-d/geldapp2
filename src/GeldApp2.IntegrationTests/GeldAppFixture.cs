@@ -91,6 +91,14 @@ namespace GeldApp2.IntegrationTests
             resp.StatusCode.Should().Be(status);
         }
 
+        public T GetService<T>()
+        {
+            using (var scope = this.Sut.Server.Host.Services.CreateScope())
+            {
+                return scope.ServiceProvider.GetRequiredService<T>();
+            }
+        }
+
         // High level api calls.
 
         public async Task Login(string user, string password = "abc123")
@@ -122,6 +130,12 @@ namespace GeldApp2.IntegrationTests
         public async Task<ExpenseViewModel> GetExpenseAsync(string accountName, long id)
         {
             return await this.GetAsync<ExpenseViewModel>($"/api/account/{accountName}/expense/{id}");
+        }
+
+        public async Task AddExpenseAsync(string accountName, decimal amount, string category, string subcategory)
+        {
+            var cmd = new Expense(amount, category, subcategory).AsCommand(accountName);
+            (await this.Client.PostAsync($"/api/account/{accountName}/expenses", cmd.AsContent())).ShouldBeOk();
         }
 
         // Internal stuff.

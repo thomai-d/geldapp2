@@ -6,6 +6,9 @@ using System.Linq;
 
 namespace Abstrakt.AspNetCore
 {
+    /// <summary>
+    /// Threadsafe implementation to count various events within a given survey time.
+    /// </summary>
     public class EventCounter
     {
         private readonly NowDelegate now;

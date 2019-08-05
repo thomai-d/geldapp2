@@ -7,6 +7,7 @@ namespace GeldApp2.Application.Logging
 {
     public class Events
     {
+        /* App commands 1xxx */
         public const int Startup = 1000;
 
         public const int HandleRequestFailed = 1002;
@@ -20,6 +21,12 @@ namespace GeldApp2.Application.Logging
         public const int PerformanceStatistics = 1008;
 
         public const int UsageStatistics = 1009;
+
+        public const int StartService = 1010;
+
+        public const int StopService = 1011;
+
+        public const int LearnCategoriesForAccount = 1012;
 
 
         /* Domain commands 2xxx */

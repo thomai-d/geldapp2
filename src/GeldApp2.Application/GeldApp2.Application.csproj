@@ -13,6 +13,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Abstrakt.Basics\Abstrakt.Basics.csproj" />
+    <ProjectReference Include="..\Abstrakt.ML\Abstrakt.ML.csproj" />
     <ProjectReference Include="..\GeldApp2.Database\GeldApp2.Database.csproj" />
   </ItemGroup>
 

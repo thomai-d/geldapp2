@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using GeldApp2.Application.Commands;
 using GeldApp2.Application.Commands.Category;
+using GeldApp2.Application.ML;
 using GeldApp2.Application.Queries.Category;
 using GeldApp2.Database.ViewModels;
 using MediatR;
@@ -27,8 +28,18 @@ namespace GeldApp2.Controllers
             accountName = Uri.UnescapeDataString(accountName);
             return await this.mediator.Send(new GetCategoriesForAccountQuery(accountName));
         }
-        
 
+        [HttpGet, Route("/api/account/{accountName}/categories/predict")]
+        public async Task<ActionResult<CategoryPredictionResult>> PredictCategory(string accountName, float amount, DateTime created, DateTime expenseDate)
+        {
+            accountName = Uri.UnescapeDataString(accountName);
+            var result = await this.mediator.Send(new PredictCategoryCommand(accountName, amount, created, expenseDate));
+            if (result == CategoryPredictionResult.Empty)
+                return this.NoContent();
+
+            return result;
+        }
+        
         [HttpPost("/api/account/{accountName}/categories")]
         public async Task Create(string accountName, [FromBody]CreateCategoryCommand cmd)
         {

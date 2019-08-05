@@ -61,11 +61,18 @@ namespace GeldApp2.ML.Test
 
             var multi = new MultiClassClassifier<SampleInput, string>();
 
-            var tree = 50;
-            var leaves = 50;
-            var examples = 1;
-            multi.TrainFastForestOva(data, mca => mca.WithLabel(i => i.Category).WithFeatures(i => i.Amount, i => i.CreatedHour, i => i.ExpenseDayOfWeek),
-                                       ff => ff.WithNumberOfTrees(tree).WithLeaves(leaves).WithExampleCountPerLeaf(examples));
+            var multiClassOptions = new MultiClassOptions<SampleInput>()
+                                           .WithLabel(i => i.Category)
+                                           .WithFeatures(i => i.Amount, i => i.CreatedHour, i => i.ExpenseDayOfWeek);
+
+            var ffOptions = new FastForestOvaOptions()
+                                    .WithNumberOfTrees(50)
+                                    .WithLeaves(50)
+                                    .WithExampleCountPerLeaf(1);
+
+            multi.TrainFastForestOva(data, multiClassOptions, ffOptions);
+            multi.DumpEvaluation(data);
+            multi.DumpFeatureImportance(data);
 
             //multi.SaveModel(@"C:\\Users\\Hans\\Desktop\\Thomas.model.zip");
 

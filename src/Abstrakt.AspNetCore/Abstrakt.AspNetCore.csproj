@@ -10,4 +10,8 @@
     <PackageReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Abstrakt.Basics\Abstrakt.Basics.csproj" />
+  </ItemGroup>
+
 </Project>

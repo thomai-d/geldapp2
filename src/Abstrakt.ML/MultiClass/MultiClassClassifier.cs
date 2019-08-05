@@ -30,20 +30,14 @@ namespace Abstrakt.ML.MultiClass
 
         public MultiClassOptions<TInput> Options { get; private set; }
 
-        public void TrainFastForestOva(IEnumerable<TInput> trainingData, Action<MultiClassOptions<TInput>> multiClassConfigurator, Action<FastForestOvaOptions> fastForestConfigurator)
+        public void TrainFastForestOva(IEnumerable<TInput> trainingData, MultiClassOptions<TInput> multiClassOptions, FastForestOvaOptions fastForestOptions)
         {
-            this.Options = new MultiClassOptions<TInput>();
-            multiClassConfigurator(this.Options);
-
-            var fastForestOptions = new FastForestOvaOptions();
-            fastForestConfigurator(fastForestOptions);
+            this.Options = multiClassOptions;
 
             // Data Preprocessing pipeline.
             var pipeline = this.ml.Transforms.Conversion.MapValueToKey(inputColumnName: this.Options.LabelName, outputColumnName: "Label")
                    .Append(this.ml.Transforms.Concatenate("Features", this.Options.FeatureColumnNames))
                    .AppendCacheCheckpoint(this.ml);
-
-            Console.Write($"Trees: {fastForestOptions.NumberOfTrees}   Leaves: {fastForestOptions.NumberOfLeaves}   Ex: {fastForestOptions.MinimumExampleCountPerLeaf}   ");
 
             // Training pipeline.
             var classifier = this.ml.BinaryClassification.Trainers.FastForest(numberOfLeaves: fastForestOptions.NumberOfLeaves, minimumExampleCountPerLeaf: fastForestOptions.MinimumExampleCountPerLeaf,
@@ -52,26 +46,12 @@ namespace Abstrakt.ML.MultiClass
             this.trainingPipeline = pipeline.Append(multiClass);
 
             // Training.
-            var w = Stopwatch.StartNew();
             var trainData = this.ml.Data.LoadFromEnumerable(trainingData);
-
-            // TODO CROSS VALIDATE: Choose best.
-            //var cvResults = this.ml.MulticlassClassification.CrossValidate(trainingDataView, trainingPipeline);
-            //foreach (var cvr in cvResults)
-            //{
-            //    Console.WriteLine($"CV-Fold-{cvr.Fold}: Micro: {cvr.Metrics.MicroAccuracy:F3}\tMacro: {cvr.Metrics.MacroAccuracy}\tLogLoss: {cvr.Metrics.LogLoss}");
-            //}
-
             this.model = trainingPipeline
                          .Append(this.ml.Transforms.Conversion.MapKeyToValue("PredictedLabel"))
                          .Fit(trainData);
 
             this.inputSchema = trainData.Schema;
-            w.Stop();
-            Console.Write($"Train {w.Elapsed.TotalSeconds:##0}s   ");
-
-            this.Evaluate(trainData);
-            this.DumpFeatureImportance(trainingData);
 
             this.predictionEngine = this.ml.Model.CreatePredictionEngine<TInput, PredictionOutput>(model);
         }
@@ -121,9 +101,10 @@ namespace Abstrakt.ML.MultiClass
             }
         }
 
-        private void Evaluate(IDataView data)
+        public void DumpEvaluation(IEnumerable<TInput> data)
         {
-            var metrics = this.ml.MulticlassClassification.Evaluate(this.model.Transform(data));
+            var evaluationData = this.model.Transform(this.ml.Data.LoadFromEnumerable(data));
+            var metrics = this.ml.MulticlassClassification.Evaluate(evaluationData);
             var micro = metrics.MicroAccuracy.ToString("F3").PadLeft(5);
             var macro = metrics.MacroAccuracy.ToString("F3").PadLeft(5);
             var logl = metrics.LogLoss.ToString("F2").PadLeft(6);

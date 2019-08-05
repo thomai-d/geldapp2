@@ -6,9 +6,4 @@
     <Authors>Thomas Maisel</Authors>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.ML" Version="1.2.0" />
-    <PackageReference Include="Microsoft.ML.FastTree" Version="1.2.0" />
-  </ItemGroup>
-
 </Project>

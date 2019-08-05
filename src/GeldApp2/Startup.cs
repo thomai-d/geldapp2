@@ -1,4 +1,6 @@
 using Abstrakt.AspNetCore;
+using Abstrakt.AspNetCore.Services;
+using Abstrakt.Basics;
 using Autofac;
 using GeldApp2.Application.Commands.Users;
 using GeldApp2.Application.Logging;
@@ -49,6 +51,7 @@ namespace GeldApp2
             services.Configure<IpBlockerSettings>(Configuration.GetSection("IpBlockerSettings"));
 
             services.AddHostedService<StatisticsService>();
+            services.AddHostedService<AsyncServiceStarter>();
 
             services.AddScoped<ISqlQuery, SqlQuery>();
             services.AddScoped<IJwtTokenService, JwtTokenService>();
@@ -56,6 +59,9 @@ namespace GeldApp2
             services.AddScoped<IUsageStatisticsLogger, UsageStatisticsLogger>();
             services.AddSingleton<IIpBlockerService, IpBlockerService>();
             services.AddSingleton<ILogContextEnricher, LogContextEnricher>();
+            services.AddSingleton<ICategoryPredictionService, CategoryPredictionService>();
+
+            services.AddSingleton<IAsyncStartableService>(sp => sp.GetRequiredService<ICategoryPredictionService>());
 
             this.InjectPreloadedObjects(services);
 

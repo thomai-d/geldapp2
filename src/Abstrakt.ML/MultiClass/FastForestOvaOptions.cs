@@ -14,20 +14,23 @@ namespace Abstrakt.ML.MultiClass
 
         public FastForestOvaOptions WithLeaves(int leaves)
         {
-            this.NumberOfLeaves = leaves;
-            return this;
+            var clone = (FastForestOvaOptions)this.MemberwiseClone();
+            clone.NumberOfLeaves = leaves;
+            return clone;
         }
 
         public FastForestOvaOptions WithExampleCountPerLeaf(int minCount)
         {
+            var clone = (FastForestOvaOptions)this.MemberwiseClone();
             this.MinimumExampleCountPerLeaf = minCount;
-            return this;
+            return clone;
         }
 
         public FastForestOvaOptions WithNumberOfTrees(int maxTrees)
         {
+            var clone = (FastForestOvaOptions)this.MemberwiseClone();
             this.NumberOfTrees = maxTrees;
-            return this;
+            return clone;
         }
     }
 }

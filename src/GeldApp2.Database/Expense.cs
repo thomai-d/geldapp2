@@ -11,6 +11,11 @@ namespace GeldApp2.Database
         {
         }
 
+        public Expense(decimal amount, string category, string subcategory)
+            : this(amount, category, subcategory, string.Empty)
+        {
+        }
+
         public Expense(decimal amount, string category, string subcategory, string details)
         {
             this.Amount = amount;
@@ -22,7 +27,6 @@ namespace GeldApp2.Database
             this.Date = this.Created.Date;
             this.LastModified = this.Created;
         }
-
 
         public long Id { get; set; }
 
