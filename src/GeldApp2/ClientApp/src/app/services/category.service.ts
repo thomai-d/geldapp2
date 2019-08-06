@@ -7,6 +7,7 @@ import { Injectable } from '@angular/core';
 import { GeldAppApi } from '../api/geldapp-api';
 import { isOfflineException } from '../helpers/exception-helper';
 import { environment } from 'src/environments/environment';
+import { CategoryPredictionResult } from '../api/model/response-types';
 
 @Injectable({
   providedIn: 'root'
@@ -54,6 +55,10 @@ export class CategoryService {
   async deleteSubcategory(accountName: string, categoryName: string, subcategoryName: string) {
     await this.api.deleteSubCategory(accountName, categoryName, subcategoryName);
     this.invalidate(accountName);
+  }
+
+  async predictCategory(accountName: string, amount: number, created: Date, expenseDate: Date): Promise<CategoryPredictionResult> {
+    return this.api.predictCategory(accountName, amount, created, expenseDate);
   }
 
   async getCategoriesFor(accountName: string): Promise<CacheableItem<Category[]>> {

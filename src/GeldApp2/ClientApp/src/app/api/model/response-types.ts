@@ -17,3 +17,8 @@ export interface DateChartItem {
   y: number;
 }
 
+export interface CategoryPredictionResult {
+  category: string;
+  subcategory: string;
+  success: boolean;
+}

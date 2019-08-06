@@ -6,7 +6,7 @@ import { Logger } from '../services/logger';
 import { AccountSummary } from './model/account-summary';
 import { Category } from './model/category';
 import { ChangePassword, CompareCategoryChartOptions } from './model/request-types';
-import { ExpenseRevenueLineChartsDto } from './model/response-types';
+import { ExpenseRevenueLineChartsDto, CategoryPredictionResult } from './model/response-types';
 import { UserSummary } from './model/user-summary';
 
 /// Encapsulates every single call to the web-API.
@@ -186,5 +186,28 @@ export class GeldAppApi {
     this.log.debug('api', `Creating user ${name}`);
     const url = `${this.url}api/users`;
     await this.http.post(url, { name, password, createDefaultAccount}).toPromise();
+  }
+
+  // 200: Success
+  // 204: No data for account
+  // 500: Server error
+  async predictCategory(accountName: string, amount: number, created: Date, expenseDate: Date): Promise<CategoryPredictionResult> {
+    this.log.debug('api', `predicting category for ${accountName} with amount ${amount}...`);
+    accountName = encodeURIComponent(accountName);
+    const url = `${this.url}api/account/${accountName}/categories/predict`;
+    const params = {
+      amount: amount.toString(),
+      created: created.toISOString(),
+      expenseDate: expenseDate.toISOString()
+    };
+
+    const response = await this.http.get(url, { params: params, observe: 'response' }).toPromise();
+    if (response.status === 200) {
+      const result = <CategoryPredictionResult>response.body;
+      result.success = true;
+      return result;
+    }
+
+    return { success: false, category: '', subcategory: '' };
   }
 }

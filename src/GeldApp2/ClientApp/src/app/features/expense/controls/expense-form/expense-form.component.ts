@@ -8,6 +8,8 @@ import { Subscription, combineLatest } from 'rxjs';
 import { ExpenseType } from 'src/app/api/model/expense-type';
 import { DialogService } from 'src/app/services/dialog.service';
 import { ToolbarService, ToolbarItem } from 'src/app/services/toolbar.service';
+import { GeldAppApi } from 'src/app/api/geldapp-api';
+import { switchMap, combineAll, startWith, filter, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-expense-form',
@@ -182,7 +184,40 @@ export class ExpenseFormComponent implements OnInit, OnDestroy {
       this.expenseForm.get('date').setValue(today);
       this.toolbarService.setTitle('Neuer Eintrag');
       this.isInEditMode = true;
+
+      this.setupCategoryPrediction();
     }
+  }
+
+  private setupCategoryPrediction() {
+      this.observables.push(combineLatest([
+        this.expenseForm.get('amount').valueChanges.pipe(startWith(this.expenseForm.get('type').value), distinctUntilChanged()),
+        this.expenseForm.get('type').valueChanges.pipe(startWith(this.expenseForm.get('type').value), distinctUntilChanged()),
+        this.expenseForm.get('date').valueChanges.pipe(startWith(this.expenseForm.get('date').value), distinctUntilChanged())])
+        .pipe(
+          filter(([amount]) => amount > 0 && this.isPredictionEnabled()),
+          debounceTime(500),
+          switchMap(async ([amount, type, date]) => {
+            if (type === ExpenseType.expense || type === ExpenseType.regularExpense) {
+              amount = -amount;
+            }
+            return await this.categoryService.predictCategory(this.accountName, amount, new Date(Date.now()), date);
+        }),
+        filter(r => r.success && this.isPredictionEnabled()))
+        .subscribe(result => {
+          const category = this.categories.find(cat => cat.name === result.category);
+          if (category) {
+            this.expenseForm.get('categoryName').setValue(result.category);
+            if (category.subcategories.find(sub => sub === result.subcategory)) {
+              this.expenseForm.get('subcategoryName').setValue(result.subcategory);
+            }
+          }
+        }));
+  }
+
+  private isPredictionEnabled(): boolean {
+    return this.expenseForm.get('categoryName').pristine
+      && this.expenseForm.get('subcategoryName').pristine;
   }
 
   private startEditMode() {
