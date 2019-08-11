@@ -30,12 +30,17 @@ namespace GeldApp2.Application.Services
 
         private readonly ConcurrentDictionary<string, CategoryPredictor> accountToPredictor = new ConcurrentDictionary<string, CategoryPredictor>();
         private readonly GeldAppContext db;
+        private readonly IScheduler scheduler;
         private readonly ILogger<CategoryPredictionService> log;
 
-        public CategoryPredictionService(GeldAppContext db, ILogger<CategoryPredictionService> log)
+        public CategoryPredictionService(
+            GeldAppContext db,
+            IScheduler scheduler,
+            ILogger<CategoryPredictionService> log)
         {
             this.db = db;
             this.log = log;
+            this.scheduler = scheduler;
         }
 
         public async Task LearnCategoriesAsync()
@@ -72,6 +77,7 @@ namespace GeldApp2.Application.Services
         public async Task StartAsync(CancellationToken ct)
         {
             await this.LearnCategoriesAsync();
+            this.scheduler.ScheduleEveryNight(() => this.LearnCategoriesAsync());
         }
 
         public Task StopAsync(CancellationToken ct)

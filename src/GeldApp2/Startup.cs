@@ -60,7 +60,9 @@ namespace GeldApp2
             services.AddSingleton<IIpBlockerService, IpBlockerService>();
             services.AddSingleton<ILogContextEnricher, LogContextEnricher>();
             services.AddSingleton<ICategoryPredictionService, CategoryPredictionService>();
+            services.AddSingleton<IScheduler, Scheduler>();
 
+            services.AddSingleton<IAsyncStartableService>(sp => sp.GetRequiredService<IScheduler>());
             services.AddSingleton<IAsyncStartableService>(sp => sp.GetRequiredService<ICategoryPredictionService>());
 
             this.InjectPreloadedObjects(services);
