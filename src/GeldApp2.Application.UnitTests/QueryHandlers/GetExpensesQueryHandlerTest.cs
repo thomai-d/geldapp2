@@ -35,7 +35,7 @@ namespace GeldApp2.Application.UnitTests.Queries.Expense
         [InlineData("!subcategory:'Pidser'", new long[] { 1 }, "Unterkategorie")]
         [InlineData("!amount<-3", new long[] { 4 }, "Amount")]
         [InlineData("!amount>9999", new long[] { 7 }, "Amount 2")]
-        [InlineData("!amount=1000,12", new long[] { 6 }, "Amount 3")]
+        [InlineData("!amount:1000,12", new long[] { 6 }, "Amount 3")]
         [InlineData("!type:regularRevenue", new long[] { 6 }, "Type")]
         public async Task SearchTest(string searchText, long[] resultIds, string reason, bool includeFuture = true)
         {

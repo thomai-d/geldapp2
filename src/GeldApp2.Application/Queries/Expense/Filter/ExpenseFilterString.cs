@@ -18,7 +18,7 @@ namespace GeldApp2.Application.Queries.Expense.Filter
         private static readonly Regex StringValueRx = new Regex(@"^:(?<VALUE>.*?)($|\s)");
         private static readonly Regex QuotedStringValueRx = new Regex(@"^:'(?<VALUE>.*?)'($|\s)");
         private static readonly Regex AndRx = new Regex(@"^\s*and\s+");
-        private static readonly Regex CompareAmountRx = new Regex(@"^(?<COMPARE>[><=]{1})(?<VALUE>-?\d{1,5}(,?)\d{0,2})($|\s)");
+        private static readonly Regex CompareAmountRx = new Regex(@"^(?<COMPARE>[><:]{1})(?<VALUE>-?\d{1,5}(,?)\d{0,2})($|\s)");
 
         private string remainder;
 
@@ -143,7 +143,7 @@ namespace GeldApp2.Application.Queries.Expense.Filter
             {
                 case ">": compareType = Filter.AmountCompareType.GreaterThan; break;
                 case "<": compareType = Filter.AmountCompareType.LowerThan; break;
-                case "=": compareType = Filter.AmountCompareType.Equals; break;
+                case ":": compareType = Filter.AmountCompareType.Equals; break;
                 default: throw new FilterParseException($"'{this.FilterString}': Invalid amount compare sign.");
             }
 
