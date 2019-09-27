@@ -238,6 +238,17 @@ export class ExpenseFormComponent implements OnInit, OnDestroy {
       }));
   }
 
+  private async onSubtractClick() {
+    const subtract = await this.dialogService.enterNumber('Abziehen?');
+    if (subtract > 0) {
+      const currentAmount = this.expenseForm.get('amount').value;
+      if (currentAmount > subtract) {
+        const result = currentAmount - subtract;
+        this.expenseForm.get('amount').setValue(this.formatAmount(result));
+      }
+    }
+  }
+
   private disableFormChangedEvents() {
     this.formChangedSubscriptions.forEach(s => s.unsubscribe());
     this.formChangedSubscriptions = [];

@@ -1,0 +1,17 @@
+<div class="text-centered">
+  <form ng-submit="onAccept()">
+
+    <p class="text-left wrap-text">{{data.message}}</p><br>
+
+    <input type="number" [(ngModel)]="data.result" [ngModelOptions]="{standalone: true}">
+    
+    <br>
+    <br>
+
+    <button class="dlg-button" mat-raised-button color="primary" type="submit" (click)="onAccept()">OK</button>
+
+    <button class="dlg-button" mat-raised-button type="button" (click)="onClose()">Egal</button>
+
+  </form>
+
+</div>

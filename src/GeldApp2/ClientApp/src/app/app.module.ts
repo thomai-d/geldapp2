@@ -28,6 +28,7 @@ import { ToolbarComponent } from './controls/toolbar/toolbar.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { UnauthorizedInterceptor } from './guards/unauthorized.interceptor';
 import { HAMMER_GESTURE_CONFIG, HammerGestureConfig } from '@angular/platform-browser';
+import { EnterNumberComponent } from './dialogs/enter-number/enter-number.component';
 
 export class MyHammerConfig extends HammerGestureConfig {
     buildHammer(element: HTMLElement) {
@@ -54,6 +55,7 @@ export function tokenGetter() {
     DecisionDialogComponent,
     TextInputDialogComponent,
     ToolbarComponent,
+    EnterNumberComponent,
   ],
   imports: [
     GlobalImportsModule,
@@ -74,7 +76,13 @@ export function tokenGetter() {
     ChartsModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
-  entryComponents: [ ErrorDialogComponent, ProgressDialogComponent, DecisionDialogComponent, TextInputDialogComponent ],
+  entryComponents: [
+    ErrorDialogComponent,
+    ProgressDialogComponent,
+    DecisionDialogComponent,
+    TextInputDialogComponent,
+    EnterNumberComponent
+  ],
   providers: [
     { provide: LOCALE_ID, useValue: 'de' },
     { provide: HTTP_INTERCEPTORS, useClass: UnauthorizedInterceptor, multi: true },

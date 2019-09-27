@@ -5,6 +5,7 @@ import { Progress, ProgressDialogComponent } from '../dialogs/progress-dialog/pr
 import { Observable } from 'rxjs';
 import { DecisionDialogData, DecisionDialogComponent } from '../dialogs/decision-dialog/decision-dialog.component';
 import { TextInputDialogComponent, TextInputData } from '../dialogs/text-input-dialog/text-input-dialog.component';
+import { EnterNumberComponent, EnterNumberDialogData } from '../dialogs/enter-number/enter-number.component';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +22,18 @@ export class DialogService {
     return new Promise(resolve => {
         dialogRef.afterClosed()
           .subscribe(_ => resolve());
+      });
+  }
+
+  public enterNumber(message: string): Promise<number> {
+    const dialogData = <EnterNumberDialogData>{
+      message: message,
+    };
+
+    const dialogRef = this.dialog.open(EnterNumberComponent, { data: dialogData });
+    return new Promise(resolve => {
+        dialogRef.afterClosed()
+          .subscribe(_ => resolve(dialogData.result));
       });
   }
 
