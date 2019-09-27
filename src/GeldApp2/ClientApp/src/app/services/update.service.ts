@@ -16,7 +16,8 @@ export class UpdateService {
     private api: GeldAppApi,
     private log: Logger
   ) {
-    setInterval(() => this.checkForUpdate(), 120000);
+    setTimeout(() => this.checkForUpdate(), 60000);
+    setInterval(() => this.checkForUpdate(), 600000);
   }
 
   async checkForUpdate() {
