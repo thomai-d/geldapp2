@@ -1,13 +1,13 @@
 import { Category } from '../api/model/category';
 import { CacheService, CacheableItem } from './cache.service';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable, Subject, Subscriber } from 'rxjs';
 import { UserService, IUserWithAccounts } from './user.service';
 import { Logger } from 'src/app/services/logger';
 import { Injectable } from '@angular/core';
 import { GeldAppApi } from '../api/geldapp-api';
-import { isOfflineException } from '../helpers/exception-helper';
-import { environment } from 'src/environments/environment';
 import { CategoryPredictionResult } from '../api/model/response-types';
+import { environment } from 'src/environments/environment';
+import { isOfflineException } from '../helpers/exception-helper';
 
 @Injectable({
   providedIn: 'root'
@@ -61,35 +61,49 @@ export class CategoryService {
     return this.api.predictCategory(accountName, amount, created, expenseDate);
   }
 
-  async getCategoriesFor(accountName: string): Promise<CacheableItem<Category[]>> {
-    const cacheKey = CategoryService.CategoryCacheKeyFn(accountName);
-    const cachedItem = this.cache.get<Category[]>(cacheKey);
-    const now = Date.now();
-    if (cachedItem && cachedItem.data) {
-      if (cachedItem.timestamp + environment.categoryCacheInvalidationIntervalMs > now) {
-        return CacheableItem.live(cachedItem.data);
-      }
-    }
-
-    try {
-      const categories = await this.fetchCategories(accountName);
-      return CacheableItem.live(categories);
-    } catch (ex) {
-
-      if (cachedItem) {
-        return cachedItem;
+  getCategoriesFor(accountName: string): Observable<CacheableItem<Category[]>> {
+    return new Observable<CacheableItem<Category[]>>(obs => {
+      const cacheKey = CategoryService.CategoryCacheKeyFn(accountName);
+      const cachedItem = this.cache.get<Category[]>(cacheKey);
+      const now = Date.now();
+      if (cachedItem && cachedItem.data) {
+        obs.next(CacheableItem.live(cachedItem.data));
+        if (cachedItem.timestamp + environment.categoryCacheInvalidationIntervalMs > now) {
+          obs.complete();
+          return;
+        }
       }
 
-      if (isOfflineException(ex)) {
-        return CacheableItem.offline();
-      }
-
-      this.log.error('services.category', `Error while fetching categories for ${accountName}: ${JSON.stringify(ex)}`);
-      return CacheableItem.error(ex.message);
-    }
+      this.continueGetCagegoriesFor(obs, accountName, !!cachedItem);
+    });
   }
 
   /* Private methods */
+
+  private async continueGetCagegoriesFor(obs: Subscriber<CacheableItem<Category[]>>, accountName: string, hasProvidedData: boolean) {
+      try {
+        const categories = await this.fetchCategories(accountName);
+        obs.next(CacheableItem.live(categories));
+        obs.complete();
+      } catch (ex) {
+
+        if (hasProvidedData) {
+          obs.complete();
+          return;
+        }
+
+        if (isOfflineException(ex)) {
+          obs.next(CacheableItem.offline());
+          obs.complete();
+          return;
+        }
+
+        this.log.error('services.category', `Error while fetching categories for ${accountName}: ${JSON.stringify(ex)}`);
+        obs.next(CacheableItem.error(ex.message));
+        obs.complete();
+        return;
+      }
+  }
 
   private async refresh(user: IUserWithAccounts) {
     this.log.debug('services.category', 'User changed. Refreshing categories...');

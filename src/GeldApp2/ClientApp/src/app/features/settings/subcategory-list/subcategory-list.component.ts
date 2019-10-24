@@ -104,7 +104,7 @@ export class SubcategoryListComponent implements OnInit {
   }
 
   async refresh() {
-    this.categories = await this.categoryService.getCategoriesFor(this.accountName);
+    this.categories = await this.categoryService.getCategoriesFor(this.accountName).toPromise();
     const category = this.categories.data ? this.categories.data.find(c => c.name === this.categoryName) : null;
     if (!category) {
       this.subcategories = [];

@@ -62,7 +62,7 @@ export class CategoryComparisonComponent
   }
 
   async onAccountChanged(accountName: string) {
-    this.categories = (await this.categoryService.getCategoriesFor(accountName)).data;
+    this.categories = (await this.categoryService.getCategoriesFor(accountName).toPromise()).data;
     this.expenseChart = null;
     this.revenueChart = null;
   }

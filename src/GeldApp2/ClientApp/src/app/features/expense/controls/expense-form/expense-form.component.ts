@@ -182,19 +182,27 @@ export class ExpenseFormComponent implements OnInit, OnDestroy {
   private async refresh() {
 
     this.enableFormChangedEvents();
-    const categories = await this.categoryService.getCategoriesFor(this.accountName);
     this.isToni = this.accountName === 'Toni';
-    this.categories = categories.data ? categories.data : [];
-    this.expenseForm.get('categoryName').setValue(null);
 
     if (this.expense) {
+      const categories = await (this.categoryService.getCategoriesFor(this.accountName).toPromise());
+      this.categories = categories.data ? categories.data : [];
+      this.expenseForm.get('categoryName').setValue(null);
+
       this.loadExpense(this.expense);
       this.toolbarService.setTitle(this.isInEditMode ? 'Eintrag bearbeiten' : 'Eintrag ansehen');
     } else {
+
       const today = new Date(Date.now());
       this.expenseForm.get('date').setValue(today);
       this.toolbarService.setTitle('Neuer Eintrag');
       this.isInEditMode = true;
+
+      this.categoryService.getCategoriesFor(this.accountName)
+        .subscribe(categories => {
+          this.categories = categories.data ? categories.data : [];
+          this.expenseForm.get('categoryName').setValue(null);
+        });
 
       this.setupCategoryPrediction();
     }

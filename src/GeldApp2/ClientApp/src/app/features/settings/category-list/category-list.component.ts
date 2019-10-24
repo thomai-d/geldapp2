@@ -100,7 +100,7 @@ export class CategoryListComponent implements OnInit {
   }
 
   private async refresh() {
-    this.categories = await this.categoryService.getCategoriesFor(this.accountName);
+    this.categories = await this.categoryService.getCategoriesFor(this.accountName).toPromise();
   }
 
   private linkFromCategoryImpl(category: Category): string[] {
