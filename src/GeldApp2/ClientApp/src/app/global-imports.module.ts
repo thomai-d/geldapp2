@@ -20,10 +20,12 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ExpenseItemComponent } from './controls/expense-item/expense-item.component';
 
 @NgModule({
   declarations: [
-    CacheStateComponent
+    CacheStateComponent,
+    ExpenseItemComponent
   ],
   imports: [
     BrowserAnimationsModule,
@@ -81,7 +83,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     MatBadgeModule,
     MatProgressBarModule,
     MatExpansionModule,
-    MatMenuModule
+    MatMenuModule,
+    ExpenseItemComponent
   ]
 })
 export class GlobalImportsModule { }

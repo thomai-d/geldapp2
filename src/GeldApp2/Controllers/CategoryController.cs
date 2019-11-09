@@ -33,7 +33,7 @@ namespace GeldApp2.Controllers
         public async Task<ActionResult<CategoryPredictionResult>> PredictCategory(string accountName, float amount, DateTime created, DateTime expenseDate)
         {
             accountName = Uri.UnescapeDataString(accountName);
-            var result = await this.mediator.Send(new PredictCategoryCommand(accountName, amount, created, expenseDate));
+            var result = await this.mediator.Send(new PredictCategoryQuery(accountName, amount, created, expenseDate));
             if (result == CategoryPredictionResult.Empty)
                 return this.NoContent();
 

@@ -90,6 +90,7 @@ namespace GeldApp2.IntegrationTests
         [InlineData("/api/account/Hans/categories")]
         [InlineData("/api/account/Hans/expenses")]
         [InlineData("/api/account/Hans/charts/compare-category")]
+        [InlineData("/api/account/Hans/import/csv")]
         [InlineData("/api/users")]
         public async Task PostControllersAreNotAccessibleWithoutAuthentication(string url)
         {

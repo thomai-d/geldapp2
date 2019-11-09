@@ -26,6 +26,8 @@ namespace GeldApp2.Database
         public DbSet<Subcategory> Subcategories { get; set; }
 
         public DbSet<Expense> Expenses { get; set; }
+        
+        public DbSet<ImportedExpense> ImportedExpenses { get; set; }
 
         /* Queries */
 
@@ -36,6 +38,11 @@ namespace GeldApp2.Database
             modelBuilder.Query<MonthlyDataItem>();
             modelBuilder.Query<KeyValueItem>();
             modelBuilder.Query<AccountSummary>();
+
+            modelBuilder.Entity<ImportedExpense>()
+                        .HasOne(i => i.Expense)
+                        .WithMany()
+                        .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<UserAccount>()
                 .HasKey(u => new { u.UserId, u.AccountId });

@@ -1,0 +1,8 @@
+"Kontonummer:";"DE12121212121212121212 / Mein Konto";
+
+"Von:";"25.09.2019";
+"Bis:";"25.10.2019";
+"Kontostand vom 25.10.2019:";"10,00 EUR";
+
+"Buchungstag";"Wertstellung";"Buchungstext";"Auftraggeber / Begünstigter";"Verwendungszweck";"Kontonummer";"BLZ";"Betrag (EUR)";"Gläubiger-ID";"Mandatsreferenz";"Kundenreferenz";
+"25.10.2019";"25.10.2019";"FOLGELASTSCHRIFT";"LastschriftVon";"DetailInfo1 äöü";"DE11111111111111111111";"TUBDDEDD";"-12,34";"DE22222222222222222222";"mref1";"kref1";

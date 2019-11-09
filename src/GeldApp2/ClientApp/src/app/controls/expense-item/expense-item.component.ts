@@ -9,15 +9,10 @@ import { Expense } from 'src/app/api/model/expense';
 export class ExpenseItemComponent implements OnInit {
 
   @Input() expense: Expense;
-  @Output() click = new EventEmitter<Expense>();
 
   constructor() { }
 
   ngOnInit() {
-  }
-
-  onClick() {
-    this.click.emit(this.expense);
   }
 
   formatDate(dateStr: string): string {

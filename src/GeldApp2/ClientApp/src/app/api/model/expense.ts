@@ -28,4 +28,7 @@ export class Expense {
   lastModified = '';
 
   lastModifiedBy = '';
+
+  // Defined in the CreateExpenseCommand.
+  handlesImportedExpenseId: number | undefined;
 }

@@ -1,4 +1,4 @@
-import { ChartsModule } from './../charts/charts.module';
+import { ToolsModule } from './../tools/tools.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ExpenseRoutingModule } from './expense-routing.module';
@@ -9,7 +9,6 @@ import { AddExpenseComponent } from './add-expense/add-expense.component';
 import { ExpenseFormComponent } from './controls/expense-form/expense-form.component';
 import { EditExpenseComponent } from './edit-expense/edit-expense.component';
 import { AccountOverviewTableComponent } from './account-overview-table/account-overview-table.component';
-import { ExpenseItemComponent } from './expense-item/expense-item.component';
 
 @NgModule({
   declarations: [
@@ -17,14 +16,13 @@ import { ExpenseItemComponent } from './expense-item/expense-item.component';
     AddExpenseComponent,
     ExpenseFormComponent,
     EditExpenseComponent,
-    AccountOverviewTableComponent,
-    ExpenseItemComponent,
+    AccountOverviewTableComponent
   ],
   imports: [
     GlobalImportsModule,
     CommonModule,
     ExpenseRoutingModule,
-    ChartsModule
+    ToolsModule
   ],
   exports: [
     AccountOverviewTableComponent

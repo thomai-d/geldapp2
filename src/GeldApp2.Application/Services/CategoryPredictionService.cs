@@ -76,8 +76,12 @@ namespace GeldApp2.Application.Services
 
         public async Task StartAsync(CancellationToken ct)
         {
+#if DEBUG
+            await Task.Yield();
+#else
             await this.LearnCategoriesAsync();
             this.scheduler.ScheduleEveryNight(() => this.LearnCategoriesAsync());
+#endif
         }
 
         public Task StopAsync(CancellationToken ct)

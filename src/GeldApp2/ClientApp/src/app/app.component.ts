@@ -52,8 +52,8 @@ export class AppComponent implements OnInit {
     this.router.navigate(['/expenses', this.accountService.lastSelectedAccountName]);
   }
 
-  gotoCharts() {
-    this.router.navigate(['/charts', this.accountService.lastSelectedAccountName]);
+  gotoTools() {
+    this.router.navigate(['/tools', this.accountService.lastSelectedAccountName]);
   }
 
   onAccountChanged() {

@@ -1,0 +1,35 @@
+table {
+  width: 100%;
+}
+
+.detail-row {
+  height: 0;
+}
+
+.table-row td {
+  border-bottom-width: 0;
+}
+
+.table-row:hover {
+  background: #777;
+}
+
+.table-row:active {
+  background: #999;
+}
+
+.detail-content-container {
+  overflow: hidden;
+}
+
+.detail-content {
+  padding: 10px;
+}
+
+div.container-gtsm {
+  margin-right: 70px;
+}
+
+button.action-button {
+  margin-right: 8px;
+}

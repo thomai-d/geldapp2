@@ -7,7 +7,8 @@ namespace GeldApp2.Application.Logging
 {
     public class Events
     {
-        /* App commands 1xxx */
+        /* App events 1xxx */
+
         public const int Startup = 1000;
 
         public const int HandleRequestFailed = 1002;
@@ -42,5 +43,9 @@ namespace GeldApp2.Application.Logging
         public const int LoginCommand = 2004;
 
         public const int RefreshTokenCommand = 2005;
+        
+        public const int ImportCsvFile = 2006;
+        
+        public const int HandleImportedExpenseCommand = 2007;
     }
 }

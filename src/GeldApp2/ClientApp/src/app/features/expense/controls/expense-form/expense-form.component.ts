@@ -22,6 +22,10 @@ export class ExpenseFormComponent implements OnInit, OnDestroy {
 
   private formChangedSubscriptions: Subscription[] = [];
 
+  private amountPreselection: number;
+  private datePreselection: string;
+  private handleImportedExpense: number;
+
   private observables: Subscription[] = [];
 
   private saveButton: ToolbarItem;
@@ -78,9 +82,12 @@ export class ExpenseFormComponent implements OnInit, OnDestroy {
   public expenseTypeDisplay = '';
 
   async ngOnInit() {
-    combineLatest([this.activatedRoute.paramMap, this.activatedRoute.fragment])
-      .subscribe(async ([params, fragment]) => {
+    combineLatest([this.activatedRoute.paramMap, this.activatedRoute.queryParams, this.activatedRoute.fragment])
+      .subscribe(async ([params, query, fragment]) => {
         this.accountName = params.get('accountName');
+        this.handleImportedExpense = +query['handleImportedExpense'];
+        this.amountPreselection = +query['amount'];
+        this.datePreselection = query['date'];
         this.isInEditMode = fragment === 'edit';
         if (!this.accountName) { this.router.navigate(['']); }
         await this.refresh();
@@ -108,6 +115,10 @@ export class ExpenseFormComponent implements OnInit, OnDestroy {
 
     expense.accountName = this.accountName;
     expense.id = this.expense ? this.expense.id : 0;
+
+    if (this.handleImportedExpense && !this.expense) {
+      expense.handlesImportedExpenseId = this.handleImportedExpense;
+    }
 
     if (this.expense) {
       expense.created = this.expense.created;
@@ -203,6 +214,19 @@ export class ExpenseFormComponent implements OnInit, OnDestroy {
           this.categories = categories.data ? categories.data : [];
           this.expenseForm.get('categoryName').setValue(null);
         });
+
+      if (this.amountPreselection < 0) {
+        this.expenseForm.get('type').setValue(ExpenseType.expense);
+        this.expenseForm.get('amount').setValue(Math.abs(this.amountPreselection));
+      }
+      if (this.amountPreselection > 0) {
+        this.expenseForm.get('type').setValue(ExpenseType.revenue);
+        this.expenseForm.get('amount').setValue(this.amountPreselection);
+      }
+      if (this.datePreselection) {
+        const date = new Date(Date.parse(this.datePreselection));
+        this.expenseForm.get('date').setValue(date);
+      }
 
       this.setupCategoryPrediction();
     }

@@ -21,7 +21,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Abstrakt.UnitTesting\Abstrakt.UnitTesting.csproj" />
     <ProjectReference Include="..\GeldApp2\GeldApp2.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Services\dkb-import-test.csv">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

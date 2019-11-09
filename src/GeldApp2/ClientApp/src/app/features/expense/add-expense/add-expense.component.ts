@@ -26,7 +26,7 @@ export class AddExpenseComponent implements OnInit {
   async onExpenseConfirmed(expense: Expense) {
     try {
       this.expenseService.saveExpense(expense);
-      await this.router.navigate(['/expenses', expense.accountName]);
+      await this.router.navigate(['/expenses', expense.accountName], { replaceUrl: true });
     } catch (ex) {
       this.dialogService.showError('Beim Speichern ist ein Fehler aufgetreten. Bitte an Thomas wenden.');
     }

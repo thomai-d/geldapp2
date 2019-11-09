@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using GeldApp2.Application.Commands;
 using GeldApp2.Application.Commands.Expense;
 using GeldApp2.Application.Queries;
+using GeldApp2.Application.Queries.Expense;
 using GeldApp2.Database;
 using GeldApp2.Database.ViewModels;
 using MediatR;
@@ -61,6 +62,7 @@ namespace GeldApp2.Controllers
         [HttpGet("/api/account/{accountName}/expenses")]
         public async Task<ActionResult<ExpenseViewModel[]>> GetExpenses(
             string accountName,
+            [FromQuery]long relatedToImportedExpense = 0,
             [FromQuery]string q = "",
             [FromQuery]int limit = 20,
             [FromQuery]int offset = 0,
@@ -68,17 +70,25 @@ namespace GeldApp2.Controllers
         {
             accountName = Uri.UnescapeDataString(accountName);
 
-            var cmd = new GetExpensesQuery(accountName)
+            if (relatedToImportedExpense > 0)
             {
-                Limit = limit,
-                Offset = offset,
-                IncludeFuture = includeFuture,
-                SearchText = q
-            };
+                var cmd = new GetExpensesRelatedToImportedExpenseQuery(accountName, relatedToImportedExpense);
+                return await this.mediator.Send(cmd);
+            }
+            else
+            {
+                var cmd = new GetExpensesQuery(accountName)
+                {
+                    Limit = limit,
+                    Offset = offset,
+                    IncludeFuture = includeFuture,
+                    SearchText = q
+                };
+                return await this.mediator.Send(cmd);
+            }
 
-            return await this.mediator.Send(cmd);
         }
-
+        
         [HttpGet("/api/account/{accountName}/expense/{id}")]
         public async Task<ExpenseViewModel> GetExpense(string accountName, long id)
         { 

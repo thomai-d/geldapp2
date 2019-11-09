@@ -17,7 +17,7 @@ import { AccountSelectorComponent } from './controls/account-selector/account-se
 import { ExpenseModule } from './features/expense/expense.module';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { SettingsModule } from './features/settings/settings.module';
-import { ChartsModule } from './features/charts/charts.module';
+import { ToolsModule } from './features/tools/tools.module';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { ErrorDialogComponent } from './dialogs/error-dialog/error-dialog.component';
@@ -73,7 +73,7 @@ export function tokenGetter() {
         ]
       }
     }),
-    ChartsModule,
+    ToolsModule,
     ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
   entryComponents: [

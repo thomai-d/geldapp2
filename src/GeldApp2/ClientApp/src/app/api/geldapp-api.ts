@@ -8,6 +8,7 @@ import { Category } from './model/category';
 import { ChangePassword, CompareCategoryChartOptions } from './model/request-types';
 import { ExpenseRevenueLineChartsDto, CategoryPredictionResult } from './model/response-types';
 import { UserSummary } from './model/user-summary';
+import { IImportedExpense } from './model/imported-expense';
 
 /// Encapsulates every single call to the web-API.
 @Injectable({ providedIn: 'root' })
@@ -46,6 +47,40 @@ export class GeldAppApi {
     this.log.debug('api', `creating expense...`);
     const accountName = encodeURIComponent(expense.accountName);
     await this.http.post(`${this.url}api/account/${accountName}/expenses`, expense).toPromise();
+  }
+
+  async importCsv(accountName: string, file): Promise<void> {
+    this.log.debug('api', `Uploading csv...`);
+    accountName = encodeURIComponent(accountName);
+    const data = new FormData();
+    data.append('csvFile', file);
+    await this.http.post(`${this.url}api/account/${accountName}/import/csv`, data).toPromise();
+  }
+
+  async handleImportedExpense(accountName: string, importedExpense: IImportedExpense): Promise<void> {
+    this.log.debug('api', `Handling imported expense ${importedExpense.id}...`);
+    accountName = encodeURIComponent(accountName);
+    await this.http.post(`${this.url}api/account/${accountName}/imports/${importedExpense.id}/handle`, {}).toPromise();
+  }
+
+  async linkImportedExpenseToExpense(accountName: string, importedExpense: IImportedExpense, expense: Expense): Promise<void> {
+    this.log.debug('api', `Linking imported expense ${importedExpense.id} to expense ${expense.id}...`);
+    accountName = encodeURIComponent(accountName);
+
+    const params = new HttpParams()
+                      .set('importedExpenseId', importedExpense.id.toString())
+                      .set('relatedExpenseId', expense.id.toString());
+
+    await this.http.post(`${this.url}api/account/${accountName}/import/link`,
+                          {}, { params: params }).toPromise();
+  }
+
+  async getUnhandledImportedExpenses(accountName: string): Promise<IImportedExpense[]> {
+    this.log.debug('api', `getting unhandled imported expenses...`);
+    accountName = encodeURIComponent(accountName);
+
+    const importedExpenses = <IImportedExpense[]>await this.http.get(`${this.url}api/account/${accountName}/imports/unhandled`).toPromise();
+    return importedExpenses;
   }
 
   async updateExpense(expense: Expense): Promise<void> {
@@ -92,6 +127,19 @@ export class GeldAppApi {
     if (searchText) {
       params = params.set('q', searchText);
     }
+
+    const expenses = <Expense[]>await this.http.get(`${this.url}api/account/${accountName}/expenses`, { params: params }).toPromise();
+
+    return expenses;
+  }
+
+  async getExpensesRelatedToImportedExpense(accountName: string, importedExpense: IImportedExpense)
+  : Promise<Expense[]> {
+    this.log.debug('api', `getting expenses for imported expense ${importedExpense.id}...`);
+    accountName = encodeURIComponent(accountName);
+
+    const params = new HttpParams()
+                      .set('relatedToImportedExpense', importedExpense.id.toString());
 
     const expenses = <Expense[]>await this.http.get(`${this.url}api/account/${accountName}/expenses`, { params: params }).toPromise();
 

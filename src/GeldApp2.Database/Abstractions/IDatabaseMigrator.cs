@@ -1,5 +1,6 @@
 ﻿using GeldApp2.Database;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,14 +21,22 @@ namespace GeldApp2.Database.Abstractions
     public class DatabaseMigrator : IDatabaseMigrator
     {
         private readonly GeldAppContext db;
+        private readonly ILogger<DatabaseMigrator> log;
 
-        public DatabaseMigrator(GeldAppContext db)
+        public DatabaseMigrator(GeldAppContext db, ILogger<DatabaseMigrator> log)
         {
             this.db = db;
+            this.log = log;
         }
 
         public void Migrate()
         {
+            var migrations = this.db.Database.GetPendingMigrations().ToArray();
+            if (migrations.Any())
+            {
+                this.log.LogInformation($"Migrating {migrations.Length} steps...");
+            }
+
             this.db.Database.Migrate();
         }
     }

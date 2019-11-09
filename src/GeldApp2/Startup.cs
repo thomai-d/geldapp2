@@ -61,13 +61,15 @@ namespace GeldApp2
             services.AddSingleton<ILogContextEnricher, LogContextEnricher>();
             services.AddSingleton<ICategoryPredictionService, CategoryPredictionService>();
             services.AddSingleton<IScheduler, Scheduler>();
+            services.AddSingleton<IDkbCsvParser, DkbCsvParser>();
 
             services.AddSingleton<IAsyncStartableService>(sp => sp.GetRequiredService<IScheduler>());
             services.AddSingleton<IAsyncStartableService>(sp => sp.GetRequiredService<ICategoryPredictionService>());
 
             this.InjectPreloadedObjects(services);
 
-            if (string.IsNullOrEmpty(Configuration["MysqlConnectionString"])
+            var mysqlConnectionString = Configuration["MysqlConnectionString"];
+            if (string.IsNullOrEmpty(mysqlConnectionString)
                 && !Runtime.IsIntegrationTesting)
             {
                 throw new ApplicationException("MysqlConnectionString setting is empty!");
@@ -75,7 +77,7 @@ namespace GeldApp2
 
             services.AddHttpContextAccessor();
             services.AddDbContext<GeldAppContext>(opt => opt.UseMySql(
-                                Configuration["MysqlConnectionString"], mopt =>
+                                mysqlConnectionString, mopt =>
                                 mopt.ServerVersion(new Version(8, 1, 13), ServerType.MySql)));
 
             this.ConfigureAuthentication(services);

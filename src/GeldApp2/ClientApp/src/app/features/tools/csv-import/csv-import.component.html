@@ -1,0 +1,58 @@
+<div [ngClass.gt-sm]="'container-gtsm'">
+  <table mat-table [dataSource]="importedExpenses" multiTemplateDataRows>
+
+    <ng-container matColumnDef="bookingDay">
+      <th mat-header-cell *matHeaderCellDef>Buchung</th>
+      <td mat-cell *matCellDef="let element">{{element.bookingDay | date:'yyyy-MM-dd'}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="partner">
+      <th mat-header-cell *matHeaderCellDef>Auftraggeber / Begünstigter</th>
+      <td mat-cell *matCellDef="let element">{{element.partner}}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="amount">
+      <th mat-header-cell *matHeaderCellDef>Wert</th>
+      <td mat-cell *matCellDef="let element">{{element.amount}}&euro;</td>
+    </ng-container>
+
+    <ng-container matColumnDef="buttons">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let element">
+        <button mat-icon-button>
+          <mat-icon>edit</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="expandedDetail">
+      <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
+        <div [@detailExpand]="element == selectedElement ? 'expanded' : 'collapsed'" class="detail-content-container">
+          <div class="detail-content" *ngIf="element.relatedExpenses; else loading">
+            <app-expense-item *ngFor="let ex of element.relatedExpenses" [expense]="ex"
+                              (click)="onLinkWithExpense(element, ex)"></app-expense-item>
+            <button class="action-button" mat-raised-button color="primary" (click)="onCreateNew(element)">Neu erstellen</button>
+            <button class="action-button" mat-raised-button color="warn" (click)="onDelete(element)">Ignorieren</button>
+            <ng-template #loading>
+              <mat-progress-spinner [diameter]="10" mode="indeterminate"></mat-progress-spinner>
+            </ng-template>
+          </div>
+        </div>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+    <tr mat-row *matRowDef="let element; columns:columnsToDisplay;"
+      (click)="selectElement(selectedElement == element ? null : element)" class="table-row">
+    </tr>
+
+    <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+  </table>
+
+  <!-- csv import helper -->
+  <div class="hidden">
+    <form>
+      <input #importCsvInput type="file" name="csv-import" (change)="onImportCsv($event)" />
+    </form>
+  </div>
+</div>

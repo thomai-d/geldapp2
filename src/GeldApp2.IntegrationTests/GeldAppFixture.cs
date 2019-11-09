@@ -1,4 +1,5 @@
 using FluentAssertions;
+using GeldApp2.Application.Commands.Expense;
 using GeldApp2.Application.Commands.Users;
 using GeldApp2.Database;
 using GeldApp2.Database.Abstractions;
@@ -13,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json.Linq;
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Security.Authentication;
@@ -73,15 +75,38 @@ namespace GeldApp2.IntegrationTests
 
         // Test helpers.
 
+        public T QueryDb<T>(Func<GeldAppContext, T> query)
+        {
+            using (var scope = this.Sut.Server.Host.Services.GetService<IServiceProvider>().CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<GeldAppContext>();
+                return query(db);
+            }
+        }
+
         public async Task<T> GetAsync<T>(string url)
         {
             var resp = await this.Client.GetAsync(url);
             return await resp.AsAsync<T>();
         }
+        
+        public async Task PostFileAsync(string url, string name, string fileName, byte[] content)
+        {
+            var data = new MultipartFormDataContent();
+            data.Add(new ByteArrayContent(content), name, fileName);
+            var resp = await this.Client.PostAsync(url, data);
+            resp.ShouldBeOk();
+        }
 
         public async Task ExpectGetAsync(string url, HttpStatusCode status)
         {
             var resp = await this.Client.GetAsync(url);
+            resp.StatusCode.Should().Be(status);
+        }
+        
+        public async Task ExpectPostAsync(string url, HttpStatusCode status)
+        {
+            var resp = await this.Client.PostAsync(url, new StringContent(string.Empty));
             resp.StatusCode.Should().Be(status);
         }
 
@@ -119,7 +144,7 @@ namespace GeldApp2.IntegrationTests
 
         public async Task<ExpenseViewModel[]> GetExpensesAsync(string accountName)
         {
-            return await this.GetAsync<ExpenseViewModel[]>($"/api/account/{accountName}/expenses");
+            return await this.GetAsync<ExpenseViewModel[]>($"/api/account/{accountName}/expenses?includeFuture=true");
         }
 
         public async Task<CategoryViewModel[]> GetCategoriesAsync(string accountName)
@@ -132,10 +157,22 @@ namespace GeldApp2.IntegrationTests
             return await this.GetAsync<ExpenseViewModel>($"/api/account/{accountName}/expense/{id}");
         }
 
-        public async Task AddExpenseAsync(string accountName, decimal amount, string category, string subcategory)
+        public async Task ExpectAddExpenseAsync(string accountName, decimal amount, string category, string subcategory, Action<Expense> modEx = null, Action<CreateExpenseCommand> modCmd = null, HttpStatusCode expectedStatus = HttpStatusCode.OK)
         {
-            var cmd = new Expense(amount, category, subcategory).AsCommand(accountName);
-            (await this.Client.PostAsync($"/api/account/{accountName}/expenses", cmd.AsContent())).ShouldBeOk();
+            var expense = new Expense(amount, category, subcategory) { Date = DateTime.Now.Date };
+
+            modEx?.Invoke(expense);
+            
+            var cmd = expense.AsCommand(accountName);
+
+            modCmd?.Invoke(cmd);
+
+            (await this.Client.PostAsync($"/api/account/{accountName}/expenses", cmd.AsContent())).StatusCode.Should().Be(expectedStatus);
+        }
+
+        public async Task AddExpenseAsync(string accountName, decimal amount, string category, string subcategory, Action<Expense> modEx = null, Action<CreateExpenseCommand> modCmd = null)
+        {
+            await ExpectAddExpenseAsync(accountName, amount, category, subcategory, modEx, modCmd, expectedStatus: HttpStatusCode.OK);
         }
 
         // Internal stuff.

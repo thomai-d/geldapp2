@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace GeldApp2.Application.Commands.Category
 {
-    public class PredictCategoryCommand : AccountRelatedRequest<CategoryPredictionResult>, ICommand
+    public class PredictCategoryQuery : AccountRelatedRequest<CategoryPredictionResult>
     {
-        public PredictCategoryCommand(string accountName, float amount, DateTime created, DateTime expenseDate)
+        public PredictCategoryQuery(string accountName, float amount, DateTime created, DateTime expenseDate)
             : base(accountName)
         {
             this.Amount = amount;
@@ -26,7 +26,7 @@ namespace GeldApp2.Application.Commands.Category
         public DateTime ExpenseDate { get; set; }
     }
 
-    public class PredictCategoryCommandHandler : IRequestHandler<PredictCategoryCommand, CategoryPredictionResult>
+    public class PredictCategoryCommandHandler : IRequestHandler<PredictCategoryQuery, CategoryPredictionResult>
     {
         private readonly ICategoryPredictionService expensePredictionService;
 
@@ -35,7 +35,7 @@ namespace GeldApp2.Application.Commands.Category
             this.expensePredictionService = expensePredictionService;
         }
 
-        public Task<CategoryPredictionResult> Handle(PredictCategoryCommand cmd, CancellationToken cancellationToken)
+        public Task<CategoryPredictionResult> Handle(PredictCategoryQuery cmd, CancellationToken cancellationToken)
         {
             return Task.FromResult(this.expensePredictionService.Predict(cmd.AccountName, cmd.Amount, cmd.Created, cmd.ExpenseDate));
         }
