@@ -38,7 +38,7 @@ export class CsvImportComponent implements OnInit {
 
   importedExpenses: IImportedExpense[];
   selectedElement: IImportedExpense | null;
-  columnsToDisplay = [ 'bookingDay', 'partner', 'amount', 'buttons' ];
+  columnsToDisplay = [ 'bookingDay', 'partner', 'amount' ];
 
   @ViewChild('importCsvInput', { static: false }) importCsvInput: ElementRef;
 
