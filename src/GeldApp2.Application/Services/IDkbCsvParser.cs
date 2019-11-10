@@ -21,7 +21,7 @@ namespace GeldApp2.Application.Services
 
         public IEnumerable<ImportedExpense> Parse(string csv)
         {
-            var lines = csv.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+            var lines = csv.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
             if (lines.Length < 6
              || !MagicStringRx.IsMatch(lines[0])
              || !lines[4].StartsWith("\"Buchungstag\""))
