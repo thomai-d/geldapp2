@@ -58,7 +58,7 @@ export class CsvImportComponent implements OnInit {
     this.toolbar.setButtons([this.toolbarImportCsv]);
   }
 
-  async selectElement(importedExpense: IImportedExpense) {
+  async onSelectElement(importedExpense: IImportedExpense) {
     this.selectedElement = importedExpense;
     if (!this.selectedElement
       || this.selectedElement.relatedExpenses) {

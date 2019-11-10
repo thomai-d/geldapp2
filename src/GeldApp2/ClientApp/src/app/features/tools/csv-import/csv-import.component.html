@@ -33,17 +33,17 @@
                               (click)="onLinkWithExpense(element, ex)"></app-expense-item>
             <button class="action-button" mat-raised-button color="primary" (click)="onCreateNew(element)">Neu erstellen</button>
             <button class="action-button" mat-raised-button color="warn" (click)="onDelete(element)">Ignorieren</button>
-            <ng-template #loading>
-              <mat-progress-spinner [diameter]="10" mode="indeterminate"></mat-progress-spinner>
-            </ng-template>
           </div>
+          <ng-template #loading>
+            <mat-progress-spinner class="spinner" [diameter]="30" mode="indeterminate"></mat-progress-spinner>
+          </ng-template>
         </div>
       </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
     <tr mat-row *matRowDef="let element; columns:columnsToDisplay;"
-      (click)="selectElement(selectedElement == element ? null : element)" class="table-row">
+      (click)="onSelectElement(selectedElement == element ? null : element)" class="table-row">
     </tr>
 
     <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>

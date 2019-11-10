@@ -33,6 +33,7 @@ namespace GeldApp2.Application.Queries.Import
             return await this.db.ImportedExpenses
                 .Where(ex => ex.AccountId == request.Account.Id
                           && !ex.IsHandled)
+                .OrderByDescending(ex => ex.BookingDay)
                 .ToArrayAsync();
         }
     }

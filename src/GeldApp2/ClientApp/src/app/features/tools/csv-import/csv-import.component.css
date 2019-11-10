@@ -33,3 +33,7 @@ div.container-gtsm {
 button.action-button {
   margin-right: 8px;
 }
+
+.spinner {
+  margin: 8px;
+}
