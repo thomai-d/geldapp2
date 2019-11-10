@@ -63,7 +63,7 @@ export class ExpenseFormComponent implements OnInit, OnDestroy {
 
   @Output() public delete = new EventEmitter<Expense>();
 
-  @ViewChild('createdDate') datePicker: any;
+  @ViewChild('createdDate', { static: false }) datePicker: any;
 
   public accountName: string;
 

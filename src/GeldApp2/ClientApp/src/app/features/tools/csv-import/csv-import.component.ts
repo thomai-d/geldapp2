@@ -40,7 +40,7 @@ export class CsvImportComponent implements OnInit {
   selectedElement: IImportedExpense | null;
   columnsToDisplay = [ 'bookingDay', 'partner', 'amount', 'buttons' ];
 
-  @ViewChild('importCsvInput') importCsvInput: ElementRef;
+  @ViewChild('importCsvInput', { static: false }) importCsvInput: ElementRef;
 
   ngOnInit() {
     this.activatedRoute.paramMap.subscribe(async params => {

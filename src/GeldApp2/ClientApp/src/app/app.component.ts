@@ -19,7 +19,7 @@ const MenuSlideIn_Area = 100;
 })
 export class AppComponent implements OnInit {
 
-  @ViewChild('sidenav') sideNavigation: MatSidenav;
+  @ViewChild('sidenav', { static: false }) sideNavigation: MatSidenav;
 
   title = 'GeldApp2';
   userName = '';

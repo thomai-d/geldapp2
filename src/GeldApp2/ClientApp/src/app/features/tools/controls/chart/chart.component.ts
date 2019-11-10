@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, AfterViewInit, OnChanges } from '@angular/core';
 import { ChartHelper } from 'src/app/helpers/chart-helper';
 import * as CanvasJS from 'src/libs/canvasjs.min';
-import { refreshDescendantViews } from '@angular/core/src/render3/instructions';
 
 @Component({
   selector: 'app-chart',

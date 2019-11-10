@@ -16,7 +16,7 @@ export class InfoComponent implements OnInit, OnDestroy {
 
   private subscriptions: Subscription[] = [];
 
-  @ViewChild('downloadCsv') private downloadButton: ElementRef;
+  @ViewChild('downloadCsv', { static: false }) private downloadButton: ElementRef;
 
   constructor(
     private mediaObserver: MediaObserver,

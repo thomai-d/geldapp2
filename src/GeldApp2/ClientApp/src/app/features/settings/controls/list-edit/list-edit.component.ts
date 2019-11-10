@@ -35,9 +35,9 @@ export class ListEditComponent implements OnInit {
 
   @Input() placeholder: string;
 
-  @ContentChild(TemplateRef) template;
+  @ContentChild(TemplateRef, { static: false }) template;
 
-  @ViewChild('itemList') itemList: MatSelectionList;
+  @ViewChild('itemList', { static: false }) itemList: MatSelectionList;
 
   isInDeleteMode = false;
 

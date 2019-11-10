@@ -60,7 +60,7 @@ export class ExpenseListComponent
   searchText = new FormControl('');
   includeFuture = new FormControl(false);
 
-  @ViewChild('search') search: ElementRef;
+  @ViewChild('search', { static: false }) search: ElementRef;
 
   async ngOnInit() {
 
