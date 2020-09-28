@@ -57,4 +57,4 @@ To get it running, set the following env variables (see dev-env folder for a sma
 
 You might set the secrets on your dev-machine with 
 `dotnet user-secrets set MysqlConnectionString "Server=localhost;Database=geldapp;User=root;Password=xxx"`
-`dotnet user-secrets set "AuthenticationSettings:JwtTokenSecret" "Secret"
+`dotnet user-secrets set "AuthenticationSettings:JwtTokenSecret" "Secret"`

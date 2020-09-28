@@ -39,7 +39,7 @@
         <input name="expense-amount" formControlName="amount" [value]="expenseForm.get('amount').value | number:'0.2-2'"
                type="text" matInput *ngIf="!isInEditMode" readonly />
         <span matPrefix>&euro;&nbsp;</span>
-        <button mat-icon-button matSuffix type="button" (click)="onSubtractClick()"><mat-icon>remove</mat-icon></button>
+        <button *ngIf="isInEditMode" mat-icon-button matSuffix type="button" (click)="onSubtractClick()"><mat-icon>remove</mat-icon></button>
       </mat-form-field>
     </div>
 
