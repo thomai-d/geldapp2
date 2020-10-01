@@ -55,9 +55,8 @@ class Build : NukeBuild
         .DependsOn(GitVersion)
         .Executes(() =>
         {
-            // HACK: The Gitversion NuGet package currently seems broken for dotnetcore2.2. This is a workaround for my build server using the docker image of gitversion.
-            // [GitVersion] readonly GitVersion GitVersion;
-            var p = ProcessTasks.StartProcess("docker", $"run --rm -v \"{SourceDirectory.Parent}:/repo\" gittools/gitversion /repo");
+            // HACK: The Gitversion NuGet package currently seems broken for linux. This is a workaround for my build server using the dotnet tool of gitversion"
+            var p = ProcessTasks.StartProcess("dotnet-gitversion", $"{SourceDirectory.Parent}");
             p.WaitForExit();
             var fullText = string.Join("\n", p.Output.Select(o => o.Text));
 
