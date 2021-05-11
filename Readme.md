@@ -10,6 +10,7 @@ ASP.NET Core / Angular 7 playground project for expense analysis. Work in progre
 - Responsive design for mobile, tablet and desktop use
 - Charts
 - Offline mode
+- Machine-aided Categorization
 
 # Screenshots
 
@@ -28,6 +29,9 @@ ASP.NET Core / Angular 7 playground project for expense analysis. Work in progre
 ### Offline mode
 ![History](screenshots/offline.png)
 
+### Auto-Categorization
+![ML](screenshots/ML.gif)
+
 # Technologies used in this playground:
 
 ### Serverside
@@ -37,6 +41,7 @@ ASP.NET Core / Angular 7 playground project for expense analysis. Work in progre
 - Docker container for easy deployment
 - SEQ for monitoring (thx for the license model!!!)
 - Gitlab with NUKE & gitversion for CI/CD
+- ML.net for Machine Learning
 
 ### Clientside
 - Angular 7 
